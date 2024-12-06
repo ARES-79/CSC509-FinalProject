@@ -73,16 +73,17 @@ public class Main extends JFrame {
 
 		Encoder mouseDataEncoder = new MouseDataEncoder();
 		//TODO: change to getting info from blackboard so it can be changed by user
+		// may end up needing to move this to connectClients()
 		mqttServer = new MQTTServer("tcp://test.mosquitto.org:1883", "TestPublisher",
 				"test/topic", mouseDataEncoder);
 		drawPanel.addMouseMotionListener(mqttServer);
 
-		//Adding Blackboard Listerners
+		//Adding Blackboard Listeners
 		Blackboard.getInstance().addPropertyChangeListener(Blackboard.EYE_DATA_LABEL, controller);
 		Blackboard.getInstance().addPropertyChangeListener(Blackboard.EMOTION_DATA_LABEL, controller);
 		Blackboard.getInstance().addPropertyChangeListener(Blackboard.PROPERTY_NAME_VIEW_DATA, drawPanel);
 
-		//Starting Thread
+		//Starting Threads
 		Thread dataProcessor = new Thread(new RawDataProcessor());
 		Thread dpDelegate = new Thread(new ViewDataProcessor());
 		Thread mouseDataServer = new Thread(mqttServer);
