@@ -10,10 +10,13 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import affectTracker.TheSubscriber;
+import app.Controller.MQTTServer;
 import app.Controller.MainController;
 import app.Model.Blackboard;
+import app.Model.MouseDataEncoder;
 import app.Model.RawDataProcessor;
 import app.Model.ViewDataProcessor;
+import headSimulatorOneLibrary.Encoder;
 import test.EmotionDataServer;
 import test.EyeTrackingServer;
 
@@ -37,9 +40,12 @@ public class Main extends JFrame {
 	private static final String TESTING_FLAG = "-test";
 	private TheSubscriber eyeSubscriber = null;
 	private TheSubscriber emotionSubscriber = null;
+
+	private MQTTServer mqttServer = null;
 	
 	public Main() {
 		setLayout(new BorderLayout());
+		//menu bar
 		JMenuBar menuBar = new JMenuBar();
 		JMenu actionsMenu = new JMenu("Actions");
 		JMenuItem start = new JMenuItem("Start");
@@ -48,25 +54,41 @@ public class Main extends JFrame {
 		actionsMenu.add(start);
 		actionsMenu.add(stop);
 		setJMenuBar(menuBar);
-		MainController controller = new MainController(this);
-		start.addActionListener(controller);
-		stop.addActionListener(controller);
+
+		//panels
 		DrawPanel drawPanel = new DrawPanel();
 		drawPanel.setPreferredSize(new Dimension(1000, 1000));
 		add(drawPanel, BorderLayout.CENTER);
+
 		PreferencePanel preferencePanel = new PreferencePanel();
 		add(preferencePanel, BorderLayout.NORTH);
 		ColorKeyPanel colorKeyPanel = new ColorKeyPanel();
 		colorKeyPanel.setPreferredSize(new Dimension(200, 1000));
 		add(colorKeyPanel, BorderLayout.EAST);
+
+		//controllers
+		MainController controller = new MainController(this);
+		start.addActionListener(controller);
+		stop.addActionListener(controller);
+
+		Encoder mouseDataEncoder = new MouseDataEncoder();
+		//TODO: change to getting info from blackboard so it can be changed by user
+		mqttServer = new MQTTServer("tcp://test.mosquitto.org:1883", "TestPublisher",
+				"test/topic", mouseDataEncoder);
+		drawPanel.addMouseMotionListener(mqttServer);
+
+		//Adding Blackboard Listerners
 		Blackboard.getInstance().addPropertyChangeListener(Blackboard.EYE_DATA_LABEL, controller);
 		Blackboard.getInstance().addPropertyChangeListener(Blackboard.EMOTION_DATA_LABEL, controller);
 		Blackboard.getInstance().addPropertyChangeListener(Blackboard.PROPERTY_NAME_VIEW_DATA, drawPanel);
 
+		//Starting Thread
 		Thread dataProcessor = new Thread(new RawDataProcessor());
 		Thread dpDelegate = new Thread(new ViewDataProcessor());
+		Thread mouseDataServer = new Thread(mqttServer);
 		dataProcessor.start();
 		dpDelegate.start();
+		mouseDataServer.start();
 	}
 	
 	public void connectClients() {
