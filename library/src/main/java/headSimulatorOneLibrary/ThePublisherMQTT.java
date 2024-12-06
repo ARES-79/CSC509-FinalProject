@@ -22,14 +22,16 @@ public class ThePublisherMQTT{
 
     private final String BROKER;
     private final String CLIENT_ID;
+    private final Encoder encoder;
     private MqttClient client;
     private static final Logger logger = LoggerFactory.getLogger(ThePublisherMQTT.class);
 
 
-    public ThePublisherMQTT(String broker, String clientId){
+    public ThePublisherMQTT(String broker, String clientId, Encoder encoder){
 
         this.BROKER = broker;
         this.CLIENT_ID = clientId;
+        this.encoder = encoder;
         try {
             client = new MqttClient(BROKER, CLIENT_ID);
         } catch (MqttException e) {
@@ -61,14 +63,15 @@ public class ThePublisherMQTT{
 
     public void publish(String topic, String content){
         try {
-            MqttMessage message= new MqttMessage(content.getBytes());
+            String encodedContent = encoder.encodeMessageForMQTT(content);
+            MqttMessage message= new MqttMessage(encodedContent.getBytes());
             message.setQos(2);
 
             if (client.isConnected()) {
                 client.publish(topic, message);
             }
 
-            System.out.println("Message published on " + topic + ": " + message);
+            logger.info("Message published on " + topic + ": " + message);
         } catch (MqttException e) {
             logger.error("Error in Publisher", e);
         }
