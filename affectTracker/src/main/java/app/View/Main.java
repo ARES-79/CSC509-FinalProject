@@ -3,6 +3,7 @@ package app.View;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -10,6 +11,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import affectTracker.TheSubscriber;
+import affectTracker.TheSubscriberMQTT;
 import app.Controller.MQTTServer;
 import app.Controller.MainController;
 import app.Model.Blackboard;
@@ -17,6 +19,7 @@ import app.Model.MouseDataEncoder;
 import app.Model.RawDataProcessor;
 import app.Model.ViewDataProcessor;
 import headSimulatorOneLibrary.Encoder;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import test.EmotionDataServer;
 import test.EyeTrackingServer;
 
@@ -38,10 +41,10 @@ import test.EyeTrackingServer;
  */
 public class Main extends JFrame {
 	private static final String TESTING_FLAG = "-test";
-	private TheSubscriber eyeSubscriber = null;
+	private TheSubscriberMQTT eyeSubscriberMqtt = null;
 	private TheSubscriber emotionSubscriber = null;
-
 	private MQTTServer mqttServer = null;
+	private final DrawPanel drawPanel;
 	
 	public Main() {
 		setLayout(new BorderLayout());
@@ -56,7 +59,7 @@ public class Main extends JFrame {
 		setJMenuBar(menuBar);
 
 		//panels
-		DrawPanel drawPanel = new DrawPanel();
+		drawPanel = new DrawPanel();
 		drawPanel.setPreferredSize(new Dimension(1000, 1000));
 		add(drawPanel, BorderLayout.CENTER);
 
@@ -71,13 +74,6 @@ public class Main extends JFrame {
 		start.addActionListener(controller);
 		stop.addActionListener(controller);
 
-		Encoder mouseDataEncoder = new MouseDataEncoder();
-		//TODO: change to getting info from blackboard so it can be changed by user
-		// may end up needing to move this to connectClients()
-		mqttServer = new MQTTServer("tcp://test.mosquitto.org:1883", "TestPublisher",
-				"test/topic", mouseDataEncoder);
-		drawPanel.addMouseMotionListener(mqttServer);
-
 		//Adding Blackboard Listeners
 		Blackboard.getInstance().addPropertyChangeListener(Blackboard.EYE_DATA_LABEL, controller);
 		Blackboard.getInstance().addPropertyChangeListener(Blackboard.EMOTION_DATA_LABEL, controller);
@@ -86,33 +82,63 @@ public class Main extends JFrame {
 		//Starting Threads
 		Thread dataProcessor = new Thread(new RawDataProcessor());
 		Thread dpDelegate = new Thread(new ViewDataProcessor());
-		Thread mouseDataServer = new Thread(mqttServer);
+
 		dataProcessor.start();
 		dpDelegate.start();
-		mouseDataServer.start();
+
 	}
 	
 	public void connectClients() {
-		int eyeTrackingPort = Blackboard.getInstance().getEyeTrackingSocket_Port();
+
+		System.out.println("connecting clients");
+
+		Encoder mouseDataEncoder = new MouseDataEncoder();
+		//TODO: change to getting info from blackboard so it can be changed by user
+		// may end up needing to move this to connectClients()
+		mqttServer = new MQTTServer(Blackboard.getInstance().getMqttBroker(),
+				"MouseDataPublisher",
+				"app/SimulatedEyeData", mouseDataEncoder);
+		drawPanel.addMouseMotionListener(mqttServer);
+
+		System.out.println("added a mqtt server, on to create subscribers");
+
+		//int eyeTrackingPort = Blackboard.getInstance().getEyeTrackingSocket_Port();
 		int emotionPort = Blackboard.getInstance().getEmotionSocket_Port();
 		cleanUpThreads();
 
-		try {
-			eyeSubscriber = new TheSubscriber(Blackboard.getInstance().getEyeTrackingSocket_Host(),
-					eyeTrackingPort, Blackboard.EYE_DATA_LABEL, Blackboard.getInstance());
-		} catch (IOException e) {
-			Blackboard.getInstance().reportEyeThreadError(e.getMessage());
-			//do not continue if we don't have access to eye data
-			return;
-		}
-		try {
+		HashMap<String, String> topicsAndPrefixes = new HashMap<>();
+		topicsAndPrefixes.put("app/SimulatedEyeData", Blackboard.EYE_DATA_LABEL);
+
+		System.out.println("cleaned up threads and created hashmap");
+
+//		try {
+			System.out.println("in the try block for the mqtt subscriber");
+			eyeSubscriberMqtt = new TheSubscriberMQTT(Blackboard.getInstance().getMqttBroker(), "readingHub",
+					topicsAndPrefixes, Blackboard.getInstance());
+
+			System.out.println("after creating the mqtt subscriber");
+					/* new TheSubscriber(Blackboard.getInstance().getEyeTrackingSocket_Host(),
+					eyeTrackingPort, Blackboard.EYE_DATA_LABEL, Blackboard.getInstance()); */
+//		} catch (MqttException e) {
+//			System.out.println("mqtt error -------");
+//			Blackboard.getInstance().reportEyeThreadError(e.getMessage());
+//			//do not continue if we don't have access to eye data
+//			return;
+//        }
+
+		System.out.println("created mqtt subscriber");
+
+        try {
 			emotionSubscriber = new TheSubscriber(Blackboard.getInstance().getEmotionSocket_Host(),
 					emotionPort, Blackboard.EMOTION_DATA_LABEL, Blackboard.getInstance());
 		} catch (IOException e) {
 			Blackboard.getInstance().reportEmotionThreadError(e.getMessage());
         }
 
-		Thread eyeThread = new Thread(eyeSubscriber);
+		System.out.println("starting threads");
+		Thread mouseDataServer = new Thread(mqttServer);
+		mouseDataServer.start();
+		Thread eyeThread = new Thread(eyeSubscriberMqtt);
 		eyeThread.start();
 		if (emotionSubscriber != null){
 			Thread emotionThread = new Thread(emotionSubscriber);
@@ -121,9 +147,9 @@ public class Main extends JFrame {
 	}
 	
 	public void cleanUpThreads() {
-		if (eyeSubscriber != null ){
-			eyeSubscriber.stopSubscriber();
-			eyeSubscriber = null;
+		if (eyeSubscriberMqtt != null ){
+			eyeSubscriberMqtt.stopSubscriber();
+			eyeSubscriberMqtt = null;
 		}
 		if (emotionSubscriber != null ){
 			emotionSubscriber.stopSubscriber();
@@ -134,9 +160,9 @@ public class Main extends JFrame {
 	private void startServerThreads() {
 		System.out.println("Starting test servers.");
 		Thread emotionServerThread = new Thread(new EmotionDataServer());
-		Thread eyeTrackingThread = new Thread(new EyeTrackingServer());
+		//Thread eyeTrackingThread = new Thread(new EyeTrackingServer());
 		emotionServerThread.start();
-		eyeTrackingThread.start();
+		//eyeTrackingThread.start();
 	}
 
 	public static void main(String[] args) {

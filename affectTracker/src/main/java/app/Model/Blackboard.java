@@ -28,6 +28,9 @@ import app.Data.ProcessedDataObject;
  * @version 1.0
  */
 public class Blackboard extends PropertyChangeSupport implements PropertyChangeListener {
+
+	private String MqttBroker = "tcp://test.mosquitto.org:1883"; //default broker
+
 	private String eyeTrackingSocket_Host = "localhost";  // default for testing
 	private int eyeTrackingSocket_Port = 6001;  // default for testing
 	private String emotionSocket_Host = "localhost"; // default for testing
@@ -249,5 +252,13 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
 	public void stoppedProcessing() {
 		firePropertyChange(STOPPED, started, false);
 		started = false;
+	}
+
+	public String getMqttBroker() {
+		return MqttBroker;
+	}
+
+	public void setMqttBroker(String mqttBroker) {
+		MqttBroker = mqttBroker;
 	}
 }

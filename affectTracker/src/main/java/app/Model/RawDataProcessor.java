@@ -165,7 +165,7 @@ public class RawDataProcessor implements Runnable, PropertyChangeListener {
 				running = false;
 			}
 			case Blackboard.STARTED -> {
-				LOGGER.info("blackboard stopped, stopping rdp");
+				LOGGER.info("blackboard started, starting rdp");
 				running = true;
 			}
 		}
