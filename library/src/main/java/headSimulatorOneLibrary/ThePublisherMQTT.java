@@ -67,6 +67,8 @@ public class ThePublisherMQTT{
             MqttMessage message= new MqttMessage(encodedContent.getBytes());
             message.setQos(2);
 
+            logger.debug("Is publisher connected?: {}", client.isConnected());
+
             if (client.isConnected()) {
                 client.publish(topic, message);
             }
