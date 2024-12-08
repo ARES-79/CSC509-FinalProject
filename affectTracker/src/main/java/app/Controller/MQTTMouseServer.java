@@ -8,15 +8,15 @@ import org.slf4j.LoggerFactory;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
-public class MQTTServer implements MouseMotionListener, Runnable {
+public class MQTTMouseServer implements MouseMotionListener, Runnable {
 
-    private static final Logger logger = LoggerFactory.getLogger(MQTTServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(MQTTMouseServer.class);
 
     private final ThePublisherMQTT mqttPublisher;
 
     private final String topic;
 
-    public MQTTServer(String broker, String clientId, String topic, Encoder encoder) {
+    public MQTTMouseServer(String broker, String clientId, String topic, Encoder encoder) {
         this.topic = topic;
         mqttPublisher = new ThePublisherMQTT(broker,  clientId, encoder);
     }
@@ -38,6 +38,7 @@ public class MQTTServer implements MouseMotionListener, Runnable {
             mqttPublisher.disconnect();
         }
     }
+
     @Override
     public void mouseDragged(MouseEvent e) {
         String mouseData = String.format("%d %d", e.getX(), e.getY()) ;
