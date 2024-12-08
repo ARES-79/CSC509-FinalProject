@@ -27,35 +27,42 @@ public class TheSubscriberMQTT extends PropertyChangeSupport implements Runnable
 
     private static final String MQTT_PREFIX = "MQTTE";
     private static final String PREFIX_DELIMITER = "~";
+
+    private final String broker;
+    private final String clientID;
     private boolean running = true;
 
-    public TheSubscriberMQTT(String broker, String clientID, Map<String, String> topicAndPrefixPairs, PropertyChangeListener listener) throws MqttException {
+    public TheSubscriberMQTT(String broker, String clientID, Map<String, String> topicAndPrefixPairs, PropertyChangeListener listener) {
         super(new Object());
+        this.broker = broker;
+        this.clientID = clientID;
         this.topicAndPrefixPairs = topicAndPrefixPairs;
-        try {
-            MqttClient client = new MqttClient(broker, clientID);
+        this.addPropertyChangeListener(CLIENT_PROPERTY_LABEL, listener);
+        this.addPropertyChangeListener(REPORT_ERROR_LABEL, listener);
+    }
+
+    @Override
+    public void run() {
+        try (MqttClient client = new MqttClient(broker, clientID);) {
+            log.debug("in constructing try block of mqtt subscriber");
             client.setCallback(this);
+            log.debug("right before connecting to broker");
             client.connect();
             log.info("Connected to broker: " + broker);
             for (String topic : topicAndPrefixPairs.keySet()){
                 client.subscribe(topic);
                 log.info("Subscribed to topic: " + topic);
             }
-            this.addPropertyChangeListener(CLIENT_PROPERTY_LABEL, listener);
-            this.addPropertyChangeListener(REPORT_ERROR_LABEL, listener);
-        } catch (MqttException e) {
-            log.warn("Unable to connect to broker --" + e.getMessage());
-            throw e;
-       }
-    }
-
-    @Override
-    public void run() {
-        try {
             //keep the thread alive and idle while waiting for new data
             while (running) {
                 Thread.sleep(1000);
             }
+        } catch (MqttException e) {
+            String mqttErrorPrefixWithDelim = MQTT_PREFIX + PREFIX_DELIMITER ;
+            firePropertyChange(REPORT_ERROR_LABEL, null, mqttErrorPrefixWithDelim +
+                    e.getMessage());
+            log.warn("Unable to connect to broker --" + e.getMessage());
+            Thread.currentThread().interrupt();
         } catch (InterruptedException e) {
             String mqttErrorPrefixWithDelim = MQTT_PREFIX + PREFIX_DELIMITER ;
             firePropertyChange(REPORT_ERROR_LABEL, null, mqttErrorPrefixWithDelim +
