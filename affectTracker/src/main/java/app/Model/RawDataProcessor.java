@@ -107,6 +107,10 @@ public class RawDataProcessor implements Runnable, PropertyChangeListener {
 	
 	private List<Integer> convertToIntegerList(String data) {
 		try {
+			// split on ":", remove the parens/brackets from {'gaze_point_on_display_area': (335, 247)}
+			data = data.split(":")[1].trim();
+			data = data.replaceAll("[{}()']", "");
+			// split on "," in "335, 247"
 			return Arrays.stream(data.split(","))
 				.map(String::trim)
 				.map(Integer::parseInt)
