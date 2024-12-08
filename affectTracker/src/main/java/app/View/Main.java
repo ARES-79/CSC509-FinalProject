@@ -84,8 +84,7 @@ public class Main extends JFrame {
 	}
 	
 	public void connectClients() {
-
-		System.out.println("connecting clients");
+		cleanUpThreads();
 
 		Encoder mouseDataEncoder = new MouseDataEncoder();
 		//TODO: change to getting info from blackboard so it can be changed by user
@@ -95,9 +94,6 @@ public class Main extends JFrame {
 				"app/SimulatedEyeData", mouseDataEncoder);
 		drawPanel.addMouseMotionListener(mqttServer);
 
-//		int emotionPort = Blackboard.getInstance().getEmotionSocket_Port();
-		cleanUpThreads();
-
 		HashMap<String, String> topicsAndPrefixes = new HashMap<>();
 		topicsAndPrefixes.put("app/SimulatedEyeData", Blackboard.EYE_DATA_LABEL);
 		topicsAndPrefixes.put("app/SimulatedEmotionData", Blackboard.EMOTION_DATA_LABEL);
@@ -105,22 +101,10 @@ public class Main extends JFrame {
 		mqttSubscriber = new TheSubscriberMQTT(Blackboard.getInstance().getMqttBroker(), "readingHub",
 				topicsAndPrefixes, Blackboard.getInstance());
 
-//        try {
-//			emotionSubscriber = new TheSubscriber(Blackboard.getInstance().getEmotionSocket_Host(),
-//					emotionPort, Blackboard.EMOTION_DATA_LABEL, Blackboard.getInstance());
-//		} catch (IOException e) {
-//			Blackboard.getInstance().reportEmotionThreadError(e.getMessage());
-//        }
-
-		System.out.println("starting threads");
 		Thread mouseDataServer = new Thread(mqttServer);
 		mouseDataServer.start();
 		Thread mqttSubscriberThread = new Thread(mqttSubscriber);
 		mqttSubscriberThread.start();
-//		if (emotionSubscriber != null){
-//			Thread emotionThread = new Thread(emotionSubscriber);
-//			emotionThread.start();
-//		}
 	}
 	
 	public void cleanUpThreads() {
@@ -128,10 +112,6 @@ public class Main extends JFrame {
 			mqttSubscriber.stopSubscriber();
 			mqttSubscriber = null;
 		}
-//		if (emotionSubscriber != null ){
-//			emotionSubscriber.stopSubscriber();
-//			emotionSubscriber = null;
-//		}
 	}
 	
 	private void startServerThreads() {
@@ -141,10 +121,6 @@ public class Main extends JFrame {
 				"MQTTEmotionServer", "app/SimulatedEmotionData", message -> message);
 		Thread emotionDataThread = new Thread(emotionServer);
 		emotionDataThread.start();
-
-//		Thread emotionServerThread = new Thread(new EmotionDataServer());
-//		emotionServerThread.start();
-
 	}
 
 	public static void main(String[] args) {
