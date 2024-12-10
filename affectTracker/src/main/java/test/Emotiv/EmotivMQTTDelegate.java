@@ -42,7 +42,7 @@ public class EmotivMQTTDelegate {
                 isActiveIdx++;
                 valueIdx++;
             }
-            Boolean isActive = emotions.getBoolean(isActiveIdx);
+            boolean isActive = emotions.getBoolean(isActiveIdx);
             if (isActive) {
                 emotionTable[i] = emotions.getDouble(valueIdx);
             } else {
