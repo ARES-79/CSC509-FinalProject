@@ -54,7 +54,6 @@ public class Highlight {
    }
 
    public void drawHighlight(Graphics g) {
-      System.out.println("Drawing highlight at (" + xCoord + ", " + yCoord + ") with color " + color.toString());
       Graphics2D g2d = (Graphics2D) g;
 
       // Set the opacity for the highlight
