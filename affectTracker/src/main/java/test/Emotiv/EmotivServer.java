@@ -14,10 +14,10 @@ import java.net.URI;
  *  @version 0.1
  */
 public class EmotivServer implements Runnable {
-    private final MQTTEmotivHandler mqttHandler;
+    private final EmotivMQTTDelegate mqttDelegate;
 
     public EmotivServer(String broker, String clientId, String topic, Encoder encoder) {
-        mqttHandler = new MQTTEmotivHandler(broker, clientId, topic, encoder);
+        mqttDelegate = new EmotivMQTTDelegate(broker, clientId, topic, encoder);
     }
 
     @Override
@@ -25,7 +25,7 @@ public class EmotivServer implements Runnable {
         try {
             EmotivDelegate delegate = new EmotivDelegate();
             URI uri = new URI("wss://localhost:6868");
-            EmotivSocket ws = new EmotivSocket(uri, delegate, mqttHandler);
+            EmotivSocket ws = new EmotivSocket(uri, delegate, mqttDelegate);
             ws.connect();
         } catch (Exception e) {
             System.out.println("Emotiv Server issue:" + e.getMessage());

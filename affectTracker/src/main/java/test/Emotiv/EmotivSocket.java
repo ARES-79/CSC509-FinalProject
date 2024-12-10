@@ -24,7 +24,7 @@ import org.json.JSONObject;
 public class EmotivSocket extends WebSocketClient {
 
     private EmotivDelegate delegate;
-    private MQTTEmotivHandler mqttHandler;
+    private EmotivMQTTDelegate mqttDelegate;
 
     private static final TrustManager[] trustAllCerts = new TrustManager[]{
             new X509TrustManager() {
@@ -40,10 +40,10 @@ public class EmotivSocket extends WebSocketClient {
             }
     };
 
-    public EmotivSocket(URI serverURI, EmotivDelegate delegate, MQTTEmotivHandler mqttHandler) throws Exception {
+    public EmotivSocket(URI serverURI, EmotivDelegate delegate, EmotivMQTTDelegate mqttDelegate) throws Exception {
         super(serverURI);
         this.delegate = delegate;
-        this.mqttHandler = mqttHandler;
+        this.mqttDelegate = mqttDelegate;
         // Disable SSL certificate validation to allow self-signed certificates
         SSLContext sc = SSLContext.getInstance("TLS");
         sc.init(null, trustAllCerts, new java.security.SecureRandom());
@@ -90,7 +90,7 @@ public class EmotivSocket extends WebSocketClient {
                     array = object.getJSONArray("dev");
                 } else if (object.has("met")) {
                     array = object.getJSONArray("met");
-                    mqttHandler.handleEmotions(array);
+                    mqttDelegate.handleEmotions(array);
                 }
                 System.out.println(time + " :: " + array);
             }
