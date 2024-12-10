@@ -17,17 +17,22 @@ public class Highlight {
 
    public Highlight(int xCoord, int yCoord, Color color, int length) {
       this.xCoord = xCoord;
-      this.yCoord = roundToNearestRowSize(yCoord);
+      //this.yCoord = roundToNearestRowSize(yCoord) + 50;
+      this.yCoord = yCoord;
       this.color = color;
       this.length = length;
    }
 
    private int roundToNearestRowSize(int yCoord) {
-      return (int) (Math.round((double) yCoord / (rowSize + 50)) * (rowSize + 50));
-  }
+      return (int) (Math.round((double) yCoord / (rowSize)) * (rowSize));
+   }
 
    public int getX() {
       return xCoord;
+   }
+
+   public Color getColor() {
+      return color;
    }
 
    public int getY() {
@@ -43,6 +48,8 @@ public class Highlight {
    }
 
    public void increaseLength(int increment) {
+      // increase length from current position (offset x)
+      this.xCoord += increment;
       this.length += increment;
    }
 
@@ -55,7 +62,6 @@ public class Highlight {
       g2d.setComposite(alphaComposite);
 
       g2d.setColor(color);
-      //g2d.fillRect(xCoord - length, yCoord - length, 2 * length, 2 * length);
       g2d.fillRect(xCoord - (length /2), yCoord, length, rowSize / 3);
    }
 }

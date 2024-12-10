@@ -48,9 +48,12 @@ public class Main extends JFrame {
 		JMenu actionsMenu = new JMenu("Actions");
 		JMenuItem start = new JMenuItem("Start");
 		JMenuItem stop = new JMenuItem("Stop");
+      JMenuItem preferencesMenuItem = new JMenuItem("Preferences");
+      preferencesMenuItem.addActionListener(e -> openPreferencesWindow());
 		menuBar.add(actionsMenu);
 		actionsMenu.add(start);
 		actionsMenu.add(stop);
+      actionsMenu.add(preferencesMenuItem);
 		setJMenuBar(menuBar);
 
 		//panels
@@ -82,6 +85,20 @@ public class Main extends JFrame {
 		dpDelegate.start();
 
 	}
+
+    // Open a new window with the PreferencePanel
+    private void openPreferencesWindow() {
+      // Create a new JFrame to hold the PreferencePanel
+      JFrame preferencesFrame = new JFrame("Preferences");
+      preferencesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      preferencesFrame.setSize(600, 400);  // Set size for the preferences window
+      preferencesFrame.setLocationRelativeTo(this);  // Center the window
+
+      PreferencePanel preferencePanel = new PreferencePanel();
+      preferencesFrame.add(preferencePanel);
+
+      preferencesFrame.setVisible(true);
+   }
 	
 	public void connectClients() {
 		cleanUpThreads();

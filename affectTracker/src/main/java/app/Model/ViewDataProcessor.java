@@ -4,11 +4,13 @@ import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Deque;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.Data.Circle;
+import app.Data.Emotion;
 import app.Data.Highlight;
 import app.Data.ProcessedDataObject;
 
@@ -56,24 +58,14 @@ public class ViewDataProcessor implements Runnable, PropertyChangeListener {
 			Blackboard.PROPERTY_NAME_PROCESSED_DATA, this);
 	}
 	
-	private void handleProcessedData(ProcessedDataObject data) {
+	private void handleProcessedData(ProcessedDataObject data) throws InterruptedException {
       Deque<Highlight> highlightList = Blackboard.getInstance().getHighlightList();
-		//Deque<Circle> circleList = Blackboard.getInstance().getCircleList();
 		Color color = data.prominentEmotion().getColor();
       // form frequency values based on prominent colors
 
       Highlight newHighlight = new Highlight(data.xCoord(), data.yCoord(), color, Blackboard.getInstance().getHighlightLength());
-		//Circle newCircle = new Circle(data.xCoord(), data.yCoord(), color, Blackboard.getInstance().getCircleRadius());
 		boolean consolidated = false;
-      /* 
-		for (Circle circle : circleList) {
-			if (isWithinThreshold(circle, newCircle)) {
-				circle.increaseRadius(50); // Consolidate by increasing the radius
-				consolidated = true;
-				break;
-			}
-		}
-      /* 
+
       for (Highlight highlight : highlightList) {
          if (isWithinThreshold(highlight, newHighlight)) {
             highlight.increaseLength(50); // Consolidate by increasing the length
@@ -81,35 +73,44 @@ public class ViewDataProcessor implements Runnable, PropertyChangeListener {
             break;
          }
       }
-      */
-      /* 
-		if (!consolidated) {
-			if (circleList.size() == Blackboard.getInstance().getMaxCircles()) {
-				circleList.pollFirst();
-			}
-			circleList.addLast(newCircle); // Add the new circle
-		}
-      */
-      //if (!consolidated) {
-      if (highlightList.size() == Blackboard.getInstance().getMaxHighlights()) {
-         highlightList.pollFirst();
+      if (!consolidated) {
+         if (highlightList.size() == Blackboard.getInstance().getMaxHighlights()) {
+            highlightList.pollFirst();
+         }
+         highlightList.addLast(newHighlight); // Add the new highlight
+         // Update frequency with highlighed emotion
+         Emotion highlightEmotion = Emotion.getEmotionByColor(newHighlight.getColor());
+         if (highlightEmotion != Emotion.NONE) {
+            updateFrequency(highlightEmotion);
+         }
       }
-      highlightList.addLast(newHighlight); // Add the new highlight
-      //}
       Blackboard.getInstance().setHighlightList(highlightList);
-		//Blackboard.getInstance().setCircleList(circleList);
-	}
-	
-	private boolean isWithinThreshold(Circle existing, Circle newCircle) {
-		int dx = existing.getX() - newCircle.getX();
-		int dy = existing.getY() - newCircle.getY();
-		double distance = Math.sqrt(dx * dx + dy * dy);
-		return distance <= Blackboard.getInstance().getThresholdRadius();
 	}
 
    private boolean isWithinThreshold(Highlight existing, Highlight newHighlight) {
       return Math.abs(existing.getX() - newHighlight.getX()) <= Blackboard.getInstance().getThresholdLength() &&
              Math.abs(existing.getY() - newHighlight.getY()) <= Blackboard.getInstance().getThresholdLength();
+   }
+
+    private void updateFrequency(Emotion emotion) throws InterruptedException {
+      List<String> frequencies = Blackboard.getInstance().getFrequencies();
+      int index = emotion.ordinal(); // Get the index of the emotion (0-4)
+      int currentCount = Integer.parseInt(frequencies.get(index).replace("%", ""));
+      currentCount++;
+
+      // Update the frequency for this emotion
+      frequencies.set(index, currentCount + "%");
+
+      Blackboard.getInstance().incrementEmotions();
+
+      // Update frequency as percentages
+      for (int i = 0; i < frequencies.size(); i++) {
+         int count = Integer.parseInt(frequencies.get(i).replace("%", ""));
+         int percentage = (int) ((double) count / Blackboard.getInstance().getProcessedEmotions() * 100);
+         frequencies.set(i, percentage + "%");
+     }
+
+     Blackboard.getInstance().setFrequencies(frequencies);
    }
 	
 	@Override
@@ -117,7 +118,11 @@ public class ViewDataProcessor implements Runnable, PropertyChangeListener {
 		ProcessedDataObject data = (ProcessedDataObject) evt.getNewValue();
 		System.out.println("retrieved processed data: " + data);
 		if (data != null) {
-			handleProcessedData(data);
+         try {
+            handleProcessedData(data);
+         } catch (Exception e) {
+            LOGGER.error("Error processing data", e);
+         }
 		}
 	}
 

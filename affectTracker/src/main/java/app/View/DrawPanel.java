@@ -67,11 +67,6 @@ public class DrawPanel extends JPanel implements PropertyChangeListener {
         }
         
         for (Highlight highlight : highlightList) {
-            // Adjust x and y coordinates of the highlight considering xOffset and currentY
-            //int adjustedX = highlight.getX() + 50;
-            //int adjustedY = highlight.getY() + 50;
-            //highlight.setX(adjustedX);
-            //highlight.setY(adjustedY);
             highlight.drawHighlight(g);
         }
     }

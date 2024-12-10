@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import affectTracker.TheSubscriber;
-import app.Data.Circle;
 import app.Data.Highlight;
 import app.Data.ProcessedDataObject;
 
@@ -56,14 +55,12 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
    private final ProcessedDataDelegate processedDataDelegate;
    private final EyeTrackingDataDelegate eyeTrackingDataDelegate;
    private final EmotionDataDelegate emotionDataDelegate;
-   private final CircleDataDelegate circleDataDelegate;
    private final HighlightDataDelegate highlightDataDelegate;
 	
 	private Blackboard() {
 		super(new Object());
       logger = LoggerFactory.getLogger(Blackboard.class);
       processedDataDelegate = new ProcessedDataDelegate();
-      circleDataDelegate = new CircleDataDelegate();
       eyeTrackingDataDelegate = new EyeTrackingDataDelegate();
       emotionDataDelegate = new EmotionDataDelegate();
       highlightDataDelegate = new HighlightDataDelegate();
@@ -212,14 +209,6 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
       highlightDataDelegate.setRowSize(rowSize);
    }
 	
-	public Deque<Circle> getCircleList() {
-      return circleDataDelegate.getCircleList();
-	}
-	
-	public void setCircleList(Deque<Circle> circleList) {
-      circleDataDelegate.setCircleList(circleList);
-	}
-	
 	public String getFormattedConnectionSettings() {
 		return String.format(
 			"""
@@ -260,26 +249,6 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
 	
 	public void setEmotionSocket_Port(int emotionSocket_Port) {
 		this.emotionSocket_Port = emotionSocket_Port;
-	}
-
-	public int getMaxCircles() {
-		return circleDataDelegate.getMaxCircles();
-	}
-	
-	public void setMaxCircles(int maxCircles) {
-		circleDataDelegate.setMaxCircles(maxCircles);
-	}
-	
-	public int getThresholdRadius() {
-		return circleDataDelegate.getThresholdRadius();
-	}
-	
-	public void setThresholdRadius(int thresholdRadius) {
-      circleDataDelegate.setThresholdRadius(thresholdRadius);
-	}
-
-	public int getCircleRadius() {
-		return circleDataDelegate.getCircleRadius();
 	}
 
 	public void reportEyeThreadError(String ex_message) {

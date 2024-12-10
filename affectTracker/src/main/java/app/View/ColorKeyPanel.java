@@ -11,6 +11,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.MatteBorder;
 
 import app.Model.Blackboard;
 
@@ -32,6 +33,9 @@ public class ColorKeyPanel extends JPanel implements PropertyChangeListener {
 
     public ColorKeyPanel() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setBorder(new MatteBorder(3, 1, 3, 3, Color.BLACK));
+
+        //addHeaderRow();
 
         // Initialize frequency labels and add rows to the panel
         for (int i = 0; i < EMOTIONS.length; i++) {
@@ -42,10 +46,26 @@ public class ColorKeyPanel extends JPanel implements PropertyChangeListener {
         Blackboard.getInstance().addPropertyChangeListener(Blackboard.PROPERTY_NAME_PROCESSED_DATA, this);
     }
 
+    private void addHeaderRow() {
+        JLabel headerLabel = new JLabel("Frequencies");
+        Font headerFont = new Font("Arial", Font.BOLD, 16);
+        headerLabel.setFont(headerFont);
+
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new GridLayout(1, 1));
+        headerPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+
+        headerPanel.add(headerLabel);
+
+        add(headerPanel);
+    }
+
     public void addRow(String emotion, Color emotionColor, String frequency) {
         // Create the emotion and frequency labels
-        JLabel emotionLabel = new JLabel("<html><font color='" + getColorHex(emotionColor) + "'>" + emotion + "</font></html>");
-        JLabel frequencyLabel = new JLabel("Frequency: " + frequency + "%");
+        String emotionText = String.format("<html><span style='border: 2px solid black; color: %s;'>%s</span></html>" 
+                                          ,getColorHex(emotionColor), emotion);
+        JLabel emotionLabel = new JLabel(emotionText);
+        JLabel frequencyLabel = new JLabel(frequency);
 
         // Set the font for labels
         Font labelFont = new Font("Arial", Font.PLAIN, 14);
@@ -59,7 +79,7 @@ public class ColorKeyPanel extends JPanel implements PropertyChangeListener {
         // Create a panel to hold the emotion and frequency labels
         JPanel rowPanel = new JPanel();
         rowPanel.setLayout(new GridLayout(1, 3));
-        rowPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        //rowPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
         rowPanel.add(emotionLabel);
         rowPanel.add(frequencyLabel);
@@ -83,7 +103,7 @@ public class ColorKeyPanel extends JPanel implements PropertyChangeListener {
 
             for (int i = 0; i < frequencies.size(); i++) {
                 if (frequencyLabels[i] != null) {
-                    frequencyLabels[i].setText("Frequency: " + frequencies.get(i));
+                    frequencyLabels[i].setText(frequencies.get(i));
                 }
             }
 
