@@ -1,4 +1,4 @@
-package test.Emotiv;
+package emotivLib;
 
 import java.net.URI;
 import java.security.cert.X509Certificate;
@@ -12,8 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * EmotivSocket is a WebSocket client that connects to the Emotiv server.
- * It is used to send requests to the Emotiv server and receive responses.
+ * EmotivSocket is a WebSocket client that connects to the emotivLib server.
+ * It is used to send requests to the emotivLib server and receive responses.
  *
  *  @author javiersgs
  *  @author Andrew Estrada

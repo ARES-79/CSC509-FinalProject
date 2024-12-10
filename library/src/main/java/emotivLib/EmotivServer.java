@@ -1,4 +1,4 @@
-package test.Emotiv;
+package emotivLib;
 
 import headSimulatorOneLibrary.Encoder;
 

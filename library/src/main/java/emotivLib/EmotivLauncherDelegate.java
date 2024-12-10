@@ -1,4 +1,4 @@
-package test.Emotiv;
+package emotivLib;
 
 import org.java_websocket.client.WebSocketClient;
 import org.json.JSONArray;
