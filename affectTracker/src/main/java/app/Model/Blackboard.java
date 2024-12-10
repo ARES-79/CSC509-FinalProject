@@ -4,12 +4,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Deque;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import affectTracker.TheSubscriber;
 import app.Data.Circle;
+import app.Data.Highlight;
 import app.Data.ProcessedDataObject;
 
 
@@ -52,6 +54,7 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
    private final EyeTrackingDataDelegate eyeTrackingDataDelegate;
    private final EmotionDataDelegate emotionDataDelegate;
    private final CircleDataDelegate circleDataDelegate;
+   private final HighlightDataDelegate highlightDataDelegate;
 	
 	private Blackboard() {
 		super(new Object());
@@ -60,6 +63,7 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
       circleDataDelegate = new CircleDataDelegate();
       eyeTrackingDataDelegate = new EyeTrackingDataDelegate();
       emotionDataDelegate = new EmotionDataDelegate();
+      highlightDataDelegate = new HighlightDataDelegate();
 	}
 	
 	public static Blackboard getInstance() {
@@ -150,6 +154,21 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
 	public String pollEmotionQueue() throws InterruptedException {
       return emotionDataDelegate.pollEmotionQueue();
 	}
+
+   public int getProcessedEmotions() throws InterruptedException {
+      return emotionDataDelegate.getProcessedEmotions();
+   }
+
+   public void incrementEmotions() throws InterruptedException {
+      emotionDataDelegate.incrementEmotions();
+   }
+
+   public List<String> getFrequencies() throws InterruptedException {
+      return emotionDataDelegate.getFrequencies();
+   }
+   public void setFrequencies(List<String> frequencies) throws InterruptedException {
+      emotionDataDelegate.setFrequencies(frequencies);
+   }
 	
 	public void addToProcessedDataQueue(ProcessedDataObject data) {
       processedDataDelegate.addToProcessedDataQueue(data);
@@ -159,6 +178,36 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
 	public ProcessedDataObject getFromProcessedDataObjectQueue() {
       return processedDataDelegate.getFromProcessedDataQueue();
 	}
+   public Deque<Highlight> getHighlightList() {
+      return highlightDataDelegate.getHighlightList();
+   }
+   public void setHighlightList(Deque<Highlight> highlightList) {
+      highlightDataDelegate.setHighlightList(highlightList);
+   }
+   public int getThresholdLength() {
+      return highlightDataDelegate.getThresholdLength();
+   }
+   public void setThresholdLength(int thresholdLength) {
+      highlightDataDelegate.setThresholdLength(thresholdLength);
+   }
+   public int getMaxHighlights() {
+      return highlightDataDelegate.getMaxHighlights();
+   }
+   public void setMaxHighlights(int maxHighlights) {
+      highlightDataDelegate.setMaxHighlights(maxHighlights);
+   }
+   public int getHighlightLength() {
+      return highlightDataDelegate.getHighlightLength();
+   }
+   public void setHighlightLength(int highlightLength) {
+      highlightDataDelegate.setHighlightLength(highlightLength);
+   }
+   public int getRowSize() {
+      return highlightDataDelegate.getRowSize();
+   }
+   public void setRowSize(int rowSize) {
+      highlightDataDelegate.setRowSize(rowSize);
+   }
 	
 	public Deque<Circle> getCircleList() {
       return circleDataDelegate.getCircleList();

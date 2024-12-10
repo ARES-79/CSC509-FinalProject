@@ -60,8 +60,8 @@ public class Main extends JFrame {
 		drawPanel.setPreferredSize(new Dimension(1000, 1000));
 		add(drawPanel, BorderLayout.CENTER);
 
-		PreferencePanel preferencePanel = new PreferencePanel();
-		add(preferencePanel, BorderLayout.NORTH);
+		//PreferencePanel preferencePanel = new PreferencePanel();
+		//add(preferencePanel, BorderLayout.NORTH);
 		ColorKeyPanel colorKeyPanel = new ColorKeyPanel();
 		colorKeyPanel.setPreferredSize(new Dimension(200, 1000));
 		add(colorKeyPanel, BorderLayout.EAST);

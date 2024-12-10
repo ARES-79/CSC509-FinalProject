@@ -1,17 +1,16 @@
 package app.Model;
 
-import app.Data.Emotion;
-import app.Data.ProcessedDataObject;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.stream.Collectors;
+import app.Data.Emotion;
+import app.Data.ProcessedDataObject;
 
 /**
  * The {@code RawDataProcessor} class processes both eye-tracking and emotion data from queues.
@@ -90,6 +89,8 @@ public class RawDataProcessor implements Runnable, PropertyChangeListener {
 					emotionScores
 			);
 
+         //updateFrequency(prominentEmotion);
+
 			Blackboard.getInstance().addToProcessedDataQueue(processedData);
 		}
 		// debugging client/server communication
@@ -151,6 +152,27 @@ public class RawDataProcessor implements Runnable, PropertyChangeListener {
 		}
 		return Emotion.getByValue(maxIndex);
 	}
+
+    private void updateFrequency(Emotion emotion) throws InterruptedException {
+      List<String> frequencies = Blackboard.getInstance().getFrequencies();
+      int index = emotion.ordinal(); // Get the index of the emotion (0-4)
+      int currentCount = Integer.parseInt(frequencies.get(index).replace("%", ""));
+      currentCount++;
+
+      // Update the frequency for this emotion
+      frequencies.set(index, currentCount + "%");
+
+      Blackboard.getInstance().incrementEmotions();
+
+      // Update frequency as percentages
+      for (int i = 0; i < frequencies.size(); i++) {
+         int count = Integer.parseInt(frequencies.get(i).replace("%", ""));
+         int percentage = (int) ((double) count / Blackboard.getInstance().getProcessedEmotions() * 100);
+         frequencies.set(i, percentage + "%");
+     }
+
+     Blackboard.getInstance().setFrequencies(frequencies);
+  }
 	
 	private void logInvalidEmotionData(String data) {
 		LOGGER.warn("Emotion data is expected to be a comma seperated list of 5 floats between 0 and 1." +
