@@ -5,7 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * EmotivDelegate follows CortexAPI protocol to set up a connection
+ * EmotivLauncherDelegate follows CortexAPI protocol to set up a connection
  *
  * @author javiersgs
  * @author Andrew Estrada
@@ -14,7 +14,7 @@ import org.json.JSONObject;
  * @version 0.1
  * @see <a href="https://emotiv.gitbook.io/cortex-api/">Cortex API</a>
  */
-public class EmotivDelegate {
+public class EmotivLauncherDelegate {
 
     public static final String CLIENT_ID = System.getenv("CLIENT_ID");
     public static final String CLIENT_SECRET = System.getenv("CLIENT_SECRET");

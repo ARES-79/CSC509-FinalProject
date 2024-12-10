@@ -23,7 +23,7 @@ import org.json.JSONObject;
  */
 public class EmotivSocket extends WebSocketClient {
 
-    private EmotivDelegate delegate;
+    private EmotivLauncherDelegate launcherDelegate;
     private EmotivMQTTDelegate mqttDelegate;
 
     private static final TrustManager[] trustAllCerts = new TrustManager[]{
@@ -40,9 +40,9 @@ public class EmotivSocket extends WebSocketClient {
             }
     };
 
-    public EmotivSocket(URI serverURI, EmotivDelegate delegate, EmotivMQTTDelegate mqttDelegate) throws Exception {
+    public EmotivSocket(URI serverURI, EmotivLauncherDelegate launcherDelegate, EmotivMQTTDelegate mqttDelegate) throws Exception {
         super(serverURI);
-        this.delegate = delegate;
+        this.launcherDelegate = launcherDelegate;
         this.mqttDelegate = mqttDelegate;
         // Disable SSL certificate validation to allow self-signed certificates
         SSLContext sc = SSLContext.getInstance("TLS");
@@ -54,7 +54,7 @@ public class EmotivSocket extends WebSocketClient {
     @Override
     public void onOpen(ServerHandshake handshake) {
         System.out.println("Connected to Emotiv server: " + getURI());
-        delegate.handle (0, null, this);
+        launcherDelegate.handle (0, null, this);
     }
 
     public Boolean handleServerEx(JSONObject res) {
@@ -75,10 +75,10 @@ public class EmotivSocket extends WebSocketClient {
         JSONObject response = new JSONObject(message);
         Boolean serverExceptionHappened = handleServerEx(response);
         if (!serverExceptionHappened) {
-            if (!delegate.isSubscribed()) {
+            if (!launcherDelegate.isSubscribed()) {
                 int id = response.getInt("id");
                 Object result = response.get("result");
-                delegate.handle (id, result, this);
+                launcherDelegate.handle (id, result, this);
             } else {
                 float time = new JSONObject(message).getFloat("time");
                 JSONObject object = new JSONObject(message);

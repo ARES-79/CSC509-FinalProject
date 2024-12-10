@@ -23,7 +23,7 @@ public class EmotivServer implements Runnable {
     @Override
     public void run() {
         try {
-            EmotivDelegate delegate = new EmotivDelegate();
+            EmotivLauncherDelegate delegate = new EmotivLauncherDelegate();
             URI uri = new URI("wss://localhost:6868");
             EmotivSocket ws = new EmotivSocket(uri, delegate, mqttDelegate);
             ws.connect();
