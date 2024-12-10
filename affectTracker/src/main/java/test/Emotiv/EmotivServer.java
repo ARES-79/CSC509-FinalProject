@@ -1,8 +1,6 @@
-package test;
+package test.Emotiv;
 
 import headSimulatorOneLibrary.Encoder;
-import headSimulatorOneLibrary.ThePublisherMQTT;
-import org.eclipse.paho.client.mqttv3.MqttClient;
 
 import java.net.URI;
 
@@ -10,13 +8,16 @@ import java.net.URI;
  * Main class to run the Emotiv WebSocket client.
  *
  *  @author javiersgs
+ *  @author Andrew Estrada
+ *  @author Sean Sponsler
+ *  @author Xiuyuan Qiu
  *  @version 0.1
  */
 public class EmotivServer implements Runnable {
-    private final MQTTHandler mqttHandler;
+    private final MQTTEmotivHandler mqttHandler;
 
     public EmotivServer(String broker, String clientId, String topic, Encoder encoder) {
-        mqttHandler = new MQTTHandler(broker, clientId, topic, encoder);
+        mqttHandler = new MQTTEmotivHandler(broker, clientId, topic, encoder);
     }
 
     @Override

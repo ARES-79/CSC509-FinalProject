@@ -17,8 +17,7 @@ import app.Model.MouseDataEncoder;
 import app.Model.RawDataProcessor;
 import app.Model.ViewDataProcessor;
 import headSimulatorOneLibrary.Encoder;
-import test.EmotivServer;
-import test.MQTTEmotionServer;
+import test.Emotiv.EmotivServer;
 
 /**
  * The {@code Main} class serves as the entry point for the Eye Tracking & Emotion Hub application.

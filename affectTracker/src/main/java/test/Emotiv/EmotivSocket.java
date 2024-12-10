@@ -1,4 +1,4 @@
-package test;
+package test.Emotiv;
 
 import java.net.URI;
 import java.security.cert.X509Certificate;
@@ -16,12 +16,15 @@ import org.json.JSONObject;
  * It is used to send requests to the Emotiv server and receive responses.
  *
  *  @author javiersgs
+ *  @author Andrew Estrada
+ *  @author Sean Sponsler
+ *  @author Xiuyuan Qiu
  *  @version 0.1
  */
 public class EmotivSocket extends WebSocketClient {
 
     private EmotivDelegate delegate;
-    private MQTTHandler mqttHandler;
+    private MQTTEmotivHandler mqttHandler;
 
     private static final TrustManager[] trustAllCerts = new TrustManager[]{
             new X509TrustManager() {
@@ -37,7 +40,7 @@ public class EmotivSocket extends WebSocketClient {
             }
     };
 
-    public EmotivSocket(URI serverURI, EmotivDelegate delegate, MQTTHandler mqttHandler) throws Exception {
+    public EmotivSocket(URI serverURI, EmotivDelegate delegate, MQTTEmotivHandler mqttHandler) throws Exception {
         super(serverURI);
         this.delegate = delegate;
         this.mqttHandler = mqttHandler;

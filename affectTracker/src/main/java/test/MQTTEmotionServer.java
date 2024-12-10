@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
-public class MQTTEmotionServer implements Runnable{
+public class MQTTEmotionServer implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(MQTTEmotionServer.class);
 
     private final ThePublisherMQTT mqttPublisher;

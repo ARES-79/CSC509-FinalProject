@@ -1,4 +1,4 @@
-package test;
+package test.Emotiv;
 
 import headSimulatorOneLibrary.Encoder;
 import headSimulatorOneLibrary.ThePublisherMQTT;
@@ -7,11 +7,19 @@ import org.json.JSONArray;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-public class MQTTHandler {
+
+/**
+ * Class that provides handleEmotions() to read a JSONArray of Emotiv Emotions and publish it with mqttPublisher
+ *
+ * @author Andrew Estrada
+ * @author Sean Sponsler
+ * @author Xiuyuan Qiu
+ * */
+public class MQTTEmotivHandler {
     private final ThePublisherMQTT mqttPublisher;
     private final String topic;
 
-    public MQTTHandler(String broker, String clientId, String topic, Encoder encoder) {
+    public MQTTEmotivHandler(String broker, String clientId, String topic, Encoder encoder) {
         this.topic = topic;
         mqttPublisher = new ThePublisherMQTT(broker,  clientId, encoder);
         mqttPublisher.connect();

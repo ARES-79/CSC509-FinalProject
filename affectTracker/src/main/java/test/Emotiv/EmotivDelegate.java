@@ -1,4 +1,4 @@
-package test;
+package test.Emotiv;
 
 import org.java_websocket.client.WebSocketClient;
 import org.json.JSONArray;
@@ -8,6 +8,9 @@ import org.json.JSONObject;
  * EmotivDelegate follows CortexAPI protocol to set up a connection
  *
  * @author javiersgs
+ * @author Andrew Estrada
+ * @author Sean Sponsler
+ * @author Xiuyuan Qiu
  * @version 0.1
  * @see <a href="https://emotiv.gitbook.io/cortex-api/">Cortex API</a>
  */
