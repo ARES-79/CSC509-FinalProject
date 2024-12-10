@@ -52,36 +52,43 @@ public class EmotivSocket extends WebSocketClient {
         delegate.handle (0, null, this);
     }
 
+    public Boolean handleServerEx(JSONObject res) {
+        if (res.has("error")) {
+            JSONObject err = res.getJSONObject("error");
+            System.out.println("Server Error: " + err.getString("message"));
+        } else if (res.has("warning")) {
+            JSONObject warn = res.getJSONObject("warning");
+            System.out.println("Server Warning: " + warn);
+        } else {
+            return false;
+        }
+        return true;
+    }
     @Override
     public void onMessage(String message) {
         System.out.println("Received message from Emotiv server.");
-        if (!delegate.isSubscribed()) {
-            JSONObject response = new JSONObject(message);
-            if (response.has("error")) {
-                JSONObject err = response.getJSONObject("error");
-                System.out.println("Server Error: " + err.getString("message"));
-            } else if (response.has("warning")) {
-                JSONObject warn = response.getJSONObject("warning");
-                System.out.println("Server Warning: " + warn);
-            }
-            else {
+        JSONObject response = new JSONObject(message);
+        Boolean serverExceptionHappened = handleServerEx(response);
+        if (!serverExceptionHappened) {
+            if (!delegate.isSubscribed()) {
                 int id = response.getInt("id");
                 Object result = response.get("result");
                 delegate.handle (id, result, this);
+            } else {
+                float time = new JSONObject(message).getFloat("time");
+                JSONObject object = new JSONObject(message);
+                JSONArray array = null;
+                if ((object.keySet()).contains("fac")) {
+                    array = object.getJSONArray("fac");
+                } else if ((object.keySet()).contains("dev")) {
+                    array = object.getJSONArray("dev");
+                } else if ((object.keySet()).contains("met")) {
+                    array = object.getJSONArray("met");
+                }
+                System.out.println(time + " :: " + array);
             }
-        } else {
-            float time = new JSONObject(message).getFloat("time");
-            JSONObject object = new JSONObject(message);
-            JSONArray array = null;
-            if ((object.keySet()).contains("fac")) {
-                array = object.getJSONArray("fac");
-            } else if ((object.keySet()).contains("dev")) {
-                array = object.getJSONArray("dev");
-            } else if ((object.keySet()).contains("met")) {
-                array = object.getJSONArray("met");
-            }
-            System.out.println(time + " :: " + array);
         }
+
     }
 
     @Override
