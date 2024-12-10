@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class is the common implementaion of the MQTT Pubisher 
- * It has implementaions for connecting, confirming connection, disconecting, and publishing data to a subscriber all using an MQTT Client
+ * This class is the common implementation of the MQTT Publisher
+ * It has implementations for connecting, confirming connection, disconnecting, and publishing data to a subscriber all using an MQTT Client
  * 
  * @author Samuel Fox Gar Kaplan
  * @author Javier Gonzalez-Sanchez
@@ -42,7 +42,7 @@ public class ThePublisherMQTT{
     public void connect(){
         try {
             client.connect();
-            System.out.println(CLIENT_ID + " connected to " + BROKER);
+            logger.info(CLIENT_ID + " connected to " + BROKER);
         } catch (MqttException e) {
             logger.error("Error in Publisher", e);
         }
@@ -67,11 +67,13 @@ public class ThePublisherMQTT{
             MqttMessage message= new MqttMessage(encodedContent.getBytes());
             message.setQos(2);
 
+            //logger.debug("Is publisher connected?: {}", client.isConnected());
+
             if (client.isConnected()) {
                 client.publish(topic, message);
+                logger.info("Message published on " + topic + ": " + message);
             }
 
-            logger.info("Message published on " + topic + ": " + message);
         } catch (MqttException e) {
             logger.error("Error in Publisher", e);
         }
