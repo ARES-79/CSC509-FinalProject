@@ -21,6 +21,7 @@ import org.json.JSONObject;
 public class EmotivSocket extends WebSocketClient {
 
     private EmotivDelegate delegate;
+    private MQTTHandler mqttHandler;
 
     private static final TrustManager[] trustAllCerts = new TrustManager[]{
             new X509TrustManager() {
@@ -36,9 +37,10 @@ public class EmotivSocket extends WebSocketClient {
             }
     };
 
-    public EmotivSocket(URI serverURI, EmotivDelegate delegate) throws Exception {
+    public EmotivSocket(URI serverURI, EmotivDelegate delegate, MQTTHandler mqttHandler) throws Exception {
         super(serverURI);
         this.delegate = delegate;
+        this.mqttHandler = mqttHandler;
         // Disable SSL certificate validation to allow self-signed certificates
         SSLContext sc = SSLContext.getInstance("TLS");
         sc.init(null, trustAllCerts, new java.security.SecureRandom());
@@ -78,12 +80,14 @@ public class EmotivSocket extends WebSocketClient {
                 float time = new JSONObject(message).getFloat("time");
                 JSONObject object = new JSONObject(message);
                 JSONArray array = null;
-                if ((object.keySet()).contains("fac")) {
+                // "met" is for emotion, "dev" is for dev mode, "fac" is for facial gestures
+                if (object.has("fac")) {
                     array = object.getJSONArray("fac");
-                } else if ((object.keySet()).contains("dev")) {
+                } else if (object.has("dev")) {
                     array = object.getJSONArray("dev");
-                } else if ((object.keySet()).contains("met")) {
+                } else if (object.has("met")) {
                     array = object.getJSONArray("met");
+                    mqttHandler.handleEmotions(array);
                 }
                 System.out.println(time + " :: " + array);
             }

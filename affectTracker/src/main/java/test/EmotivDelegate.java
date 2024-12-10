@@ -153,7 +153,6 @@ public class EmotivDelegate {
         }
     }
 
-
     public boolean isSubscribed() {
         return subscribed;
     }

@@ -1,5 +1,9 @@
 package test;
 
+import headSimulatorOneLibrary.Encoder;
+import headSimulatorOneLibrary.ThePublisherMQTT;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+
 import java.net.URI;
 
 /**
@@ -8,12 +12,23 @@ import java.net.URI;
  *  @author javiersgs
  *  @version 0.1
  */
-public class EmotivServer {
+public class EmotivServer implements Runnable {
+    private final MQTTHandler mqttHandler;
 
-    public static void main(String[] args) throws Exception {
-        EmotivDelegate delegate = new EmotivDelegate();
-        URI uri = new URI("wss://localhost:6868");
-        EmotivSocket ws = new EmotivSocket(uri, delegate);
-        ws.connect();
+    public EmotivServer(String broker, String clientId, String topic, Encoder encoder) {
+        mqttHandler = new MQTTHandler(broker, clientId, topic, encoder);
     }
+
+    @Override
+    public void run() {
+        try {
+            EmotivDelegate delegate = new EmotivDelegate();
+            URI uri = new URI("wss://localhost:6868");
+            EmotivSocket ws = new EmotivSocket(uri, delegate, mqttHandler);
+            ws.connect();
+        } catch (Exception e) {
+            System.out.println("Emotiv Server issue:" + e.getMessage());
+        }
+    }
+
 }

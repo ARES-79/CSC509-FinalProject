@@ -18,6 +18,7 @@ public class MQTTEmotionServer implements Runnable{
         this.topic = topic;
         mqttPublisher = new ThePublisherMQTT(broker,  clientId, encoder);
     }
+
     @Override
     public void run() {
         try{
