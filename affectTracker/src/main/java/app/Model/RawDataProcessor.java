@@ -127,7 +127,7 @@ public class RawDataProcessor implements Runnable, PropertyChangeListener {
 	}
 	
 	private boolean isValidEmotionData(List<Float> data) {
-		return data != null && data.stream().allMatch(number -> number >= 0 && number <= 1);
+		return data != null && data.stream().allMatch(number -> (number >= 0 && number <= 1) || (number == -1));
 	}
 	
 	private List<Float> convertToFloatList(String data) {
@@ -152,6 +152,10 @@ public class RawDataProcessor implements Runnable, PropertyChangeListener {
 			if (emotionScores.get(i) > emotionScores.get(maxIndex)) {
 				maxIndex = i;
 			}
+		}
+		if (emotionScores.get(maxIndex) == -1) {
+			// No emotions were active
+			return Emotion.NONE;
 		}
 		return Emotion.getByValue(maxIndex);
 	}
