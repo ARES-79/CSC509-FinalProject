@@ -28,12 +28,12 @@ public class EmotivMQTTDelegate {
         mqttPublisher.connect();
     }
 
-    // 6 emotions; ATTENTION ENGAGEMENT EXCITEMENT INTEREST RELAXATION STRESS
+    // 6 emotions; Attention Engagement Excitement Interest Relaxation Stress
     private double[] parseEmotions(JSONArray emotions) {
         int EMOTION_CT = 6;
         double[] emotionTable = new double[EMOTION_CT];
         if (emotions.length() != EMOTION_CT * 2 + 1) {
-            logger.warn("parseEmotions got array size: {}, expected {}",
+            logger.warn("parseEmotions got array size: {}, expected {}, can't interpret",
                         emotions.length(), EMOTION_CT * 2 + 1);
             return null;
         }
@@ -56,13 +56,15 @@ public class EmotivMQTTDelegate {
         return emotionTable;
 
     }
-    public void handleEmotions(JSONArray emotions) {
+    public void publishEmotions(JSONArray emotions) {
         if (mqttPublisher.isConnected()) {
             double[] emotionVals = parseEmotions(emotions);
-            String emotionData = Arrays.stream(emotionVals)
-                    .mapToObj(String::valueOf) // Convert each float to String
-                    .collect(Collectors.joining(", "));
-            mqttPublisher.publish(topic, emotionData);
+            if (emotionVals != null) {
+                String emotionDataAsString = Arrays.stream(emotionVals)
+                        .mapToObj(String::valueOf) // Convert each float to String
+                        .collect(Collectors.joining(", "));
+                mqttPublisher.publish(topic, emotionDataAsString);
+            }
         }
     }
 }

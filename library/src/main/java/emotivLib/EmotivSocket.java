@@ -81,7 +81,7 @@ public class EmotivSocket extends WebSocketClient {
             if (!launcherDelegate.isSubscribed()) {
                 int id = response.getInt("id");
                 Object result = response.get("result");
-                launcherDelegate.handle (id, result, this);
+                launcherDelegate.handle(id, result, this);
             } else {
                 float time = new JSONObject(message).getFloat("time");
                 JSONObject object = new JSONObject(message);
@@ -93,7 +93,7 @@ public class EmotivSocket extends WebSocketClient {
                     array = object.getJSONArray("dev");
                 } else if (object.has("met")) {
                     array = object.getJSONArray("met");
-                    mqttDelegate.handleEmotions(array);
+                    mqttDelegate.publishEmotions(array);
                 }
                 logger.info("{} :: {}", time, array);
             }
