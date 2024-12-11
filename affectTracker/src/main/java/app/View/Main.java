@@ -17,7 +17,7 @@ import app.Model.MouseDataEncoder;
 import app.Model.RawDataProcessor;
 import app.Model.ViewDataProcessor;
 import headSimulatorOneLibrary.Encoder;
-import test.MQTTEmotionServer;
+import emotivLib.EmotivServer;
 
 /**
  * The {@code Main} class serves as the entry point for the Eye Tracking & Emotion Hub application.
@@ -117,10 +117,15 @@ public class Main extends JFrame {
 	private void startServerThreads() {
 		System.out.println("Starting test servers.");
 
-		MQTTEmotionServer emotionServer = new MQTTEmotionServer(Blackboard.getInstance().getMqttBroker(),
+//		MQTTEmotionServer emotionServer = new MQTTEmotionServer(Blackboard.getInstance().getMqttBroker(),
+//				"MQTTEmotionServer", "app/SimulatedEmotionData", message -> message);
+//		Thread emotionDataThread = new Thread(emotionServer);
+//		emotionDataThread.start();
+
+		EmotivServer emotivServer = new EmotivServer(Blackboard.getInstance().getMqttBroker(),
 				"MQTTEmotionServer", "app/SimulatedEmotionData", message -> message);
-		Thread emotionDataThread = new Thread(emotionServer);
-		emotionDataThread.start();
+		Thread emotivDataThread = new Thread(emotivServer);
+		emotivDataThread.start();
 	}
 
 	public static void main(String[] args) {

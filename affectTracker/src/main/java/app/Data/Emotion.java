@@ -14,11 +14,14 @@ import java.awt.*;
 public enum Emotion {
  
 	NONE (Color.GRAY, -1),
-	FOCUS (Color.YELLOW, 0),
-	STRESS (Color.RED, 1),
-	ENGAGEMENT (Color.BLUE, 2),
-	EXCITEMENT (Color.GREEN, 3),
-	INTEREST (Color.MAGENTA, 4);
+
+	//attention, engagement, excitement, stress, relaxation, interest
+	ATTENTION (Color.YELLOW, 0),
+	ENGAGEMENT (Color.GREEN, 1),
+	EXCITEMENT (Color.BLUE, 2),
+	STRESS (Color.RED, 3),
+	RELAXATION (Color.MAGENTA, 4),
+	INTEREST (Color.CYAN, 5);
 	
 	private final Color color;
 	private final int value;
