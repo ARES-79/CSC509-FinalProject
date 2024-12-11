@@ -138,7 +138,7 @@ public class EmotivLauncherDelegate {
                 break;
             case 4:
                 myJsonObj = new JSONObject(result.toString());
-                logger.info(">>>> getUserInformation: " + myJsonObj.toString());
+                logger.info(">>>> getUserInformation: " + myJsonObj);
                 firstName = myJsonObj.getString("firstName");
                 lastName = myJsonObj.getString("lastName");
                 userName = myJsonObj.getString("username");
