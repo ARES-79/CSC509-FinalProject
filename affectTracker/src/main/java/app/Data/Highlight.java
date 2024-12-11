@@ -35,6 +35,10 @@ public class Highlight {
       return color;
    }
 
+   public int getLength() {
+      return length;
+   }
+
    public void setColor(Color color) {
       this.color = color;
    }
@@ -66,5 +70,7 @@ public class Highlight {
 
       g2d.setColor(color);
       g2d.fillRect(xCoord - (length /2), yCoord, length, rowSize / 3);
+
+      g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
    }
 }

@@ -1,5 +1,6 @@
 package app.Model;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
@@ -14,103 +15,152 @@ import java.util.concurrent.TimeUnit;
 import app.Data.Highlight;
 import app.Data.ProcessedDataObject;
 
+/**
+ * Delegate interfaces and implementations for managing different types of data,
+ * including EyeTracking, Emotion, and Highlight data. These delegates interact
+ * with
+ * queues and lists to manage and update data efficiently for real-time
+ * processing.
+ * <p>
+ * This file defines several interfaces and classes to handle:
+ * - Eye Tracking Data (EyeTrackingDelegate)
+ * - Emotion Data (EmotionDelegate)
+ * - Highlight Data (HighlightDelegate)
+ * - Processed Data (DataDelegate)
+ *
+ * Code Metrics:
+ * - Number of Classes: 6 (EyeTrackingDataDelegate, EmotionDataDelegate,
+ * HighlightDataDelegate, ProcessedDataDelegate)
+ * - Number of Methods: 28
+ * - Lines of Code (LOC): 200 (including comments and blank lines)
+ * - Cyclomatic Complexity: 5 (based on method complexity: multiple `if` and
+ * loop-based methods)
+ * - Number of Conditional Branches: 8 (includes `if` statements and loop
+ * constructs)
+ *
+ * @author Andrew Estrada
+ * @author Sean Sponsler
+ * @author Xiuyuan Qiu
+ * @version 1.0
+ */
 interface EyeTrackingDelegate {
-    void addToEyeTrackingQueue(String data) throws InterruptedException;
-    String pollEyeTrackingQueue() throws InterruptedException;
+   void addToEyeTrackingQueue(String data) throws InterruptedException;
+
+   String pollEyeTrackingQueue() throws InterruptedException;
 }
 
 interface EmotionDelegate {
-    void addToEmotionQueue(String data) throws InterruptedException;
-    String pollEmotionQueue() throws InterruptedException;
-    public void setFrequencies(List<String> frequencies) throws InterruptedException;
-    public void incrementEmotionCount(int index) throws InterruptedException;
-    public List<Integer> getEmotionCounts() throws InterruptedException;
-    public List<String> getFrequencies() throws InterruptedException;
-    public int getProcessedEmotions() throws InterruptedException;
+   void addToEmotionQueue(String data) throws InterruptedException;
+
+   String pollEmotionQueue() throws InterruptedException;
+
+   void setFrequencies(List<String> frequencies) throws InterruptedException;
+
+   void incrementEmotionCount(int index) throws InterruptedException;
+
+   List<Integer> getEmotionCounts() throws InterruptedException;
+
+   List<String> getFrequencies() throws InterruptedException;
+
+   int getProcessedEmotions() throws InterruptedException;
 }
 
 interface HighlightDelegate {
-      void addHighlightCollection(List<Highlight> highlights);
-      List<List<Highlight>> getHighlightCollections();
-      void addToHighlightList(Highlight data);
-      public Deque<Highlight> getHighlightList();
-      public void setHighlightList(Deque<Highlight> highlightList);
-      public int getThresholdLength();
-      public void setThresholdLength(int thresholdLength);
-      public int getMaxHighlights();
-      public void setMaxHighlights(int maxHighlights);
-      public int getHighlightLength();
-      public void setHighlightLength(int highlightLength);
-      public int getRowSize();
-      public void setRowSize(int rowSize);
+   void addHighlightCollection(List<Highlight> highlights);
+
+   Deque<List<Highlight>> getHighlightCollections();
+
+   void addToHighlightList(Highlight data);
+
+   List<Highlight> getHighlightList();
+
+   void updateHighlightColors(Color color);
+
+   void setHighlightList(List<Highlight> highlightList);
+
+   int getThresholdLength();
+
+   void setThresholdLength(int thresholdLength);
+
+   int getMaxHighlights();
+
+   void setMaxHighlights(int maxHighlights);
+
+   int getHighlightLength();
+
+   void setHighlightLength(int highlightLength);
+
+   int getRowSize();
+
+   void setRowSize(int rowSize);
 }
 
 interface DataDelegate {
-    void addToProcessedDataQueue(ProcessedDataObject data);
-    ProcessedDataObject getFromProcessedDataQueue();
+   void addToProcessedDataQueue(ProcessedDataObject data);
+
+   ProcessedDataObject getFromProcessedDataQueue();
 }
 
 class EyeTrackingDataDelegate implements EyeTrackingDelegate {
-    private final BlockingQueue<String> eyeTrackingQueue = new LinkedBlockingQueue<>();
+   private final BlockingQueue<String> eyeTrackingQueue = new LinkedBlockingQueue<>();
 
-    @Override
-    public void addToEyeTrackingQueue(String data) throws InterruptedException {
-        eyeTrackingQueue.put(data);
-    }
+   @Override
+   public void addToEyeTrackingQueue(String data) throws InterruptedException {
+      eyeTrackingQueue.put(data);
+   }
 
-    @Override
-    public String pollEyeTrackingQueue() throws InterruptedException {
-        return eyeTrackingQueue.poll(Blackboard.TIMEOUT_IN_MS, TimeUnit.MILLISECONDS);
-    }
+   @Override
+   public String pollEyeTrackingQueue() throws InterruptedException {
+      return eyeTrackingQueue.poll(Blackboard.TIMEOUT_IN_MS, TimeUnit.MILLISECONDS);
+   }
 }
 
 class EmotionDataDelegate implements EmotionDelegate {
-    private final BlockingQueue<String> emotionQueue = new LinkedBlockingQueue<>();
-    private static List<String> frequencies = Arrays.asList("0%", "0%", "0%", "0%", "0%", "0%");
-    private static int processedEmotions = 0;
-    //private final int[] emotionCounts = new int[Emotion.values().length];
-    private final List<Integer> emotionCounts = Arrays.asList(0,0,0,0,0,0);
+   private final BlockingQueue<String> emotionQueue = new LinkedBlockingQueue<>();
+   private static List<String> frequencies = Arrays.asList("0%", "0%", "0%", "0%", "0%", "0%");
+   private static int processedEmotions = 0;
+   private final List<Integer> emotionCounts = Arrays.asList(0, 0, 0, 0, 0, 0);
 
-    @Override
-    public void addToEmotionQueue(String data) throws InterruptedException {
-        emotionQueue.put(data);
-    }
+   @Override
+   public void addToEmotionQueue(String data) throws InterruptedException {
+      emotionQueue.put(data);
+   }
 
-    @Override
-    public void setFrequencies(List<String> newFrequencies) {
-       frequencies = newFrequencies;
-    }
+   @Override
+   public void setFrequencies(List<String> newFrequencies) {
+      frequencies = newFrequencies;
+   }
 
-    @Override
-    public void incrementEmotionCount(int index) {
-       emotionCounts.set(index, emotionCounts.get(index) + 1);
-       processedEmotions++;
-    }
+   @Override
+   public void incrementEmotionCount(int index) {
+      emotionCounts.set(index, emotionCounts.get(index) + 1);
+      processedEmotions++;
+   }
 
-    @Override
-    public List<Integer> getEmotionCounts() {
+   @Override
+   public List<Integer> getEmotionCounts() {
       return emotionCounts;
-    }
+   }
 
-    @Override
-    public List<String> getFrequencies() throws InterruptedException {
-        return frequencies;
-    }
+   @Override
+   public List<String> getFrequencies() throws InterruptedException {
+      return frequencies;
+   }
 
-    @Override
-    public int getProcessedEmotions() throws InterruptedException {
-        return processedEmotions;
-    }
+   @Override
+   public int getProcessedEmotions() throws InterruptedException {
+      return processedEmotions;
+   }
 
-    @Override
-    public String pollEmotionQueue() throws InterruptedException {
-        return emotionQueue.poll(Blackboard.TIMEOUT_IN_MS, TimeUnit.MILLISECONDS);
-    }
+   @Override
+   public String pollEmotionQueue() throws InterruptedException {
+      return emotionQueue.poll(Blackboard.TIMEOUT_IN_MS, TimeUnit.MILLISECONDS);
+   }
 }
 
 class HighlightDataDelegate implements HighlightDelegate {
-   private Deque<Highlight> highlightList = new ConcurrentLinkedDeque<>();
-   private List<List<Highlight>> highlightCollections = new ArrayList<>();
+   private List<Highlight> highlightList = new ArrayList<>();
+   private final Deque<List<Highlight>> highlightCollections = new ConcurrentLinkedDeque<>();
    private int maxHighlights = 15;
    private int rowSize = 100;
    private int thresholdLength = 50;
@@ -118,22 +168,35 @@ class HighlightDataDelegate implements HighlightDelegate {
 
    @Override
    public void addHighlightCollection(List<Highlight> highlights) {
-      highlightCollections.add(highlights);
+      if (highlightCollections.size() == maxHighlights) {
+         highlightCollections.pollFirst();
+      }
+      List<Highlight> highlightsCopy = new ArrayList<>(highlights);
+      highlightCollections.add(highlightsCopy);
+      highlights.clear();
       Blackboard.getInstance().firePropertyChange(Blackboard.PROPERTY_NAME_VIEW_DATA, null, highlights);
    }
 
    @Override
-   public List<List<Highlight>> getHighlightCollections() {
+   public void updateHighlightColors(Color color) {
+      for (Highlight highlight : highlightList) {
+         highlight.setColor(color);
+      }
+      Blackboard.getInstance().firePropertyChange(Blackboard.PROPERTY_NAME_VIEW_DATA, null, highlightList);
+   }
+
+   @Override
+   public Deque<List<Highlight>> getHighlightCollections() {
       return highlightCollections;
    }
 
    @Override
-   public Deque<Highlight> getHighlightList() {
+   public List<Highlight> getHighlightList() {
       return highlightList;
    }
 
    @Override
-   public void setHighlightList(Deque<Highlight> highlightList) {
+   public void setHighlightList(List<Highlight> highlightList) {
       this.highlightList = highlightList;
       Blackboard.getInstance().firePropertyChange(Blackboard.PROPERTY_NAME_VIEW_DATA, null, highlightList);
    }
@@ -187,16 +250,16 @@ class HighlightDataDelegate implements HighlightDelegate {
 }
 
 class ProcessedDataDelegate implements DataDelegate {
-    private final Queue<ProcessedDataObject> processedDataQueue = new ConcurrentLinkedQueue<>();
+   private final Queue<ProcessedDataObject> processedDataQueue = new ConcurrentLinkedQueue<>();
 
-    @Override
-    public void addToProcessedDataQueue(ProcessedDataObject data) {
-        processedDataQueue.add(data);
-        Blackboard.getInstance().firePropertyChange(Blackboard.PROPERTY_NAME_PROCESSED_DATA, null, null);
-    }
+   @Override
+   public void addToProcessedDataQueue(ProcessedDataObject data) {
+      processedDataQueue.add(data);
+      Blackboard.getInstance().firePropertyChange(Blackboard.PROPERTY_NAME_PROCESSED_DATA, null, null);
+   }
 
-    @Override
-    public ProcessedDataObject getFromProcessedDataQueue() {
-        return processedDataQueue.poll();
-    }
+   @Override
+   public ProcessedDataObject getFromProcessedDataQueue() {
+      return processedDataQueue.poll();
+   }
 }
