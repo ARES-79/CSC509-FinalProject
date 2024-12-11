@@ -86,7 +86,7 @@ public class ViewDataProcessor implements Runnable, PropertyChangeListener {
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		ProcessedDataObject data = (ProcessedDataObject) evt.getNewValue();
-		System.out.println("retrieved processed data: " + data);
+		LOGGER.info("retrieved processed data: " + data);
 		if (data != null) {
 			handleProcessedData(data);
 		}
