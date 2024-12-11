@@ -2,6 +2,7 @@ package app.Model;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -88,7 +89,9 @@ public class RawDataProcessor implements Runnable, PropertyChangeListener {
 					prominentEmotion,
 					emotionScores
 			);
-
+         if (prominentEmotion != Emotion.NONE) {
+            updateFrequency(prominentEmotion);
+         }
 			Blackboard.getInstance().addToProcessedDataQueue(processedData);
 		}
 		// debugging client/server communication
@@ -99,6 +102,21 @@ public class RawDataProcessor implements Runnable, PropertyChangeListener {
 			LOGGER.warn(THREAD_NAME + ": Timed out waiting for data, or one client is slow.");
 		}
 	}
+
+    private void updateFrequency(Emotion emotion) throws InterruptedException {
+        //int index = emotion.ordinal(); // Get the index of the emotion (0-4)
+        int index = emotion.getValue();
+        Blackboard.getInstance().incrementEmotionCount(index);
+
+        List<String> frequencies = new ArrayList<>();
+        List<Integer> emotionCounts = Blackboard.getInstance().getEmotionCounts();
+        int totalProcessedEmotions = Blackboard.getInstance().getProcessedEmotions();
+        for (int count : emotionCounts) {
+            int percentage = (int) ((double) count / totalProcessedEmotions * 100);
+            frequencies.add(percentage + "%");
+        }
+        Blackboard.getInstance().setFrequencies(frequencies);
+    }
     
     private boolean isValidEyeTrackingData(List<Integer> data) {
 		return data != null && data.stream().allMatch(number -> number >= 0);

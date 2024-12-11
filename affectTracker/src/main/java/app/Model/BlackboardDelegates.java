@@ -1,6 +1,5 @@
 package app.Model;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
@@ -23,7 +22,8 @@ interface EmotionDelegate {
     void addToEmotionQueue(String data) throws InterruptedException;
     String pollEmotionQueue() throws InterruptedException;
     public void setFrequencies(List<String> frequencies) throws InterruptedException;
-    public void incrementEmotions() throws InterruptedException;
+    public void incrementEmotionCount(int index) throws InterruptedException;
+    public List<Integer> getEmotionCounts() throws InterruptedException;
     public List<String> getFrequencies() throws InterruptedException;
     public int getProcessedEmotions() throws InterruptedException;
 }
@@ -63,9 +63,10 @@ class EyeTrackingDataDelegate implements EyeTrackingDelegate {
 
 class EmotionDataDelegate implements EmotionDelegate {
     private final BlockingQueue<String> emotionQueue = new LinkedBlockingQueue<>();
-    private static ArrayList<List<Float>> emotionScores = new ArrayList<>();
     private static List<String> frequencies = Arrays.asList("0%", "0%", "0%", "0%", "0%");
     private static int processedEmotions = 0;
+    //private final int[] emotionCounts = new int[Emotion.values().length];
+    private final List<Integer> emotionCounts = Arrays.asList(0,0,0,0,0);
 
     @Override
     public void addToEmotionQueue(String data) throws InterruptedException {
@@ -73,13 +74,19 @@ class EmotionDataDelegate implements EmotionDelegate {
     }
 
     @Override
-    public void setFrequencies(List<String> frequencies) {
-       this.frequencies = frequencies;
+    public void setFrequencies(List<String> newFrequencies) {
+       frequencies = newFrequencies;
     }
 
     @Override
-    public void incrementEmotions() {
-        this.processedEmotions++;
+    public void incrementEmotionCount(int index) {
+       emotionCounts.set(index, emotionCounts.get(index) + 1);
+       processedEmotions++;
+    }
+
+    @Override
+    public List<Integer> getEmotionCounts() {
+      return emotionCounts;
     }
 
     @Override

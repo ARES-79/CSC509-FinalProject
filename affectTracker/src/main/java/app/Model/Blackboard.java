@@ -159,8 +159,12 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
       return emotionDataDelegate.getProcessedEmotions();
    }
 
-   public void incrementEmotions() throws InterruptedException {
-      emotionDataDelegate.incrementEmotions();
+   public void incrementEmotionCount(int index) throws InterruptedException {
+      emotionDataDelegate.incrementEmotionCount(index);
+   }
+
+   public List<Integer> getEmotionCounts() throws InterruptedException{
+      return emotionDataDelegate.getEmotionCounts();
    }
 
    public List<String> getFrequencies() throws InterruptedException {

@@ -4,13 +4,11 @@ import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Deque;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.Data.Circle;
-import app.Data.Emotion;
 import app.Data.Highlight;
 import app.Data.ProcessedDataObject;
 
@@ -61,7 +59,6 @@ public class ViewDataProcessor implements Runnable, PropertyChangeListener {
 	private void handleProcessedData(ProcessedDataObject data) throws InterruptedException {
       Deque<Highlight> highlightList = Blackboard.getInstance().getHighlightList();
 		Color color = data.prominentEmotion().getColor();
-      // form frequency values based on prominent colors
 
       Highlight newHighlight = new Highlight(data.xCoord(), data.yCoord(), color, Blackboard.getInstance().getHighlightLength());
 		boolean consolidated = false;
@@ -78,11 +75,6 @@ public class ViewDataProcessor implements Runnable, PropertyChangeListener {
             highlightList.pollFirst();
          }
          highlightList.addLast(newHighlight); // Add the new highlight
-         // Update frequency with highlighed emotion
-         Emotion highlightEmotion = Emotion.getEmotionByColor(newHighlight.getColor());
-         if (highlightEmotion != Emotion.NONE) {
-            updateFrequency(highlightEmotion);
-         }
       }
       Blackboard.getInstance().setHighlightList(highlightList);
 	}
@@ -91,32 +83,11 @@ public class ViewDataProcessor implements Runnable, PropertyChangeListener {
       return Math.abs(existing.getX() - newHighlight.getX()) <= Blackboard.getInstance().getThresholdLength() &&
              Math.abs(existing.getY() - newHighlight.getY()) <= Blackboard.getInstance().getThresholdLength();
    }
-
-    private void updateFrequency(Emotion emotion) throws InterruptedException {
-      List<String> frequencies = Blackboard.getInstance().getFrequencies();
-      int index = emotion.ordinal(); // Get the index of the emotion (0-4)
-      int currentCount = Integer.parseInt(frequencies.get(index).replace("%", ""));
-      currentCount++;
-
-      // Update the frequency for this emotion
-      frequencies.set(index, currentCount + "%");
-
-      Blackboard.getInstance().incrementEmotions();
-
-      // Update frequency as percentages
-      for (int i = 0; i < frequencies.size(); i++) {
-         int count = Integer.parseInt(frequencies.get(i).replace("%", ""));
-         int percentage = (int) ((double) count / Blackboard.getInstance().getProcessedEmotions() * 100);
-         frequencies.set(i, percentage + "%");
-     }
-
-     Blackboard.getInstance().setFrequencies(frequencies);
-   }
-	
+  
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		ProcessedDataObject data = (ProcessedDataObject) evt.getNewValue();
-		System.out.println("retrieved processed data: " + data);
+		//System.out.println("ViewDataProcessor: retrieved processed data: " + data);
 		if (data != null) {
          try {
             handleProcessedData(data);
