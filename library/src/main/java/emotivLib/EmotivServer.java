@@ -1,6 +1,8 @@
 package emotivLib;
 
 import headSimulatorOneLibrary.Encoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 
@@ -15,6 +17,7 @@ import java.net.URI;
  */
 public class EmotivServer implements Runnable {
     private final EmotivMQTTDelegate mqttDelegate;
+    private final Logger logger = LoggerFactory.getLogger(EmotivServer.class);
 
     public EmotivServer(String broker, String clientId, String topic, Encoder encoder) {
         mqttDelegate = new EmotivMQTTDelegate(broker, clientId, topic, encoder);
@@ -28,7 +31,7 @@ public class EmotivServer implements Runnable {
             EmotivSocket ws = new EmotivSocket(uri, delegate, mqttDelegate);
             ws.connect();
         } catch (Exception e) {
-            System.out.println("Emotiv Server issue:" + e.getMessage());
+            logger.error("Emotiv Server issue:{}", e.getMessage());
         }
     }
 

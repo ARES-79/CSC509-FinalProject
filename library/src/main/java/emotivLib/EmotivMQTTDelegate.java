@@ -3,6 +3,8 @@ package emotivLib;
 import headSimulatorOneLibrary.Encoder;
 import headSimulatorOneLibrary.ThePublisherMQTT;
 import org.json.JSONArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 public class EmotivMQTTDelegate {
     private final ThePublisherMQTT mqttPublisher;
     private final String topic;
+    private final Logger logger = LoggerFactory.getLogger(EmotivMQTTDelegate.class);
 
     public EmotivMQTTDelegate(String broker, String clientId, String topic, Encoder encoder) {
         this.topic = topic;
@@ -30,7 +33,8 @@ public class EmotivMQTTDelegate {
         int EMOTION_CT = 6;
         double[] emotionTable = new double[EMOTION_CT];
         if (emotions.length() != EMOTION_CT * 2 + 1) {
-            System.out.println("Invalid emotion count: " + emotions.length());
+            logger.warn("parseEmotions got array size: {}, expected {}",
+                        emotions.length(), EMOTION_CT * 2 + 1);
             return null;
         }
         for (int i = 0; i < EMOTION_CT; i++) {
