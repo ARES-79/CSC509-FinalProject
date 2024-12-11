@@ -9,12 +9,12 @@ frequency of each emotion.
 
 ## Emotiv Launcher
 In order to get emotion information (real or simulated), you will need to install the free
-[EMOTIV Launcher software][https://www.emotiv.com/products/emotiv-launcher]. You will need to 
+[EMOTIV Launcher software](https://www.emotiv.com/products/emotiv-launcher). You will need to 
 make an account if you don't already have one. Once signed in you can create a virtual Emotiv
 device if you do not have access to a real one (we use the Insight model 1.0).
 
 ## How to Run the Application
-1. Open the [EMOTIV Launcher][Emotiv Launcher] application.
+1. Open the [EMOTIV Launcher](#emotiv-launcher) application.
 2. Power on the Emotiv device (either the actual device or the virtual one.)
 3. Connect to the Emotiv device.
 4. ** (If using a real device) put on the device, paying attention to the prompts.
