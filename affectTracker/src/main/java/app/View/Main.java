@@ -16,8 +16,8 @@ import app.Model.Blackboard;
 import app.Model.MouseDataEncoder;
 import app.Model.RawDataProcessor;
 import app.Model.ViewDataProcessor;
-import headSimulatorOneLibrary.Encoder;
 import emotivLib.EmotivServer;
+import headSimulatorOneLibrary.Encoder;
 
 /**
  * The {@code Main} class serves as the entry point for the Eye Tracking & Emotion Hub application.
@@ -150,7 +150,7 @@ public class Main extends JFrame {
 		window.setLocationRelativeTo(null);
 		window.setVisible(true);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      window.startServerThreads();
+      window.startServerThreads(); //REMOVE THIS (SEAN)
 		if (args.length > 0 && args[0].equals(TESTING_FLAG)) {
 			System.out.println(args[0]);
 			window.startServerThreads();

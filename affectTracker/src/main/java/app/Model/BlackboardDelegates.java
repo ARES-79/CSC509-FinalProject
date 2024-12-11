@@ -63,10 +63,10 @@ class EyeTrackingDataDelegate implements EyeTrackingDelegate {
 
 class EmotionDataDelegate implements EmotionDelegate {
     private final BlockingQueue<String> emotionQueue = new LinkedBlockingQueue<>();
-    private static List<String> frequencies = Arrays.asList("0%", "0%", "0%", "0%", "0%");
+    private static List<String> frequencies = Arrays.asList("0%", "0%", "0%", "0%", "0%", "0%");
     private static int processedEmotions = 0;
     //private final int[] emotionCounts = new int[Emotion.values().length];
-    private final List<Integer> emotionCounts = Arrays.asList(0,0,0,0,0);
+    private final List<Integer> emotionCounts = Arrays.asList(0,0,0,0,0,0);
 
     @Override
     public void addToEmotionQueue(String data) throws InterruptedException {

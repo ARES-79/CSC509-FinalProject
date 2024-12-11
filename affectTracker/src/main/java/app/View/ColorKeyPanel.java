@@ -23,12 +23,20 @@ import app.Model.Blackboard;
  */
 public class ColorKeyPanel extends JPanel implements PropertyChangeListener {
 
-    private JLabel[] frequencyLabels = new JLabel[5];  // Array to hold frequency labels for each emotion
+    private JLabel[] frequencyLabels = new JLabel[6];  // Array to hold frequency labels for each emotion
+    /*
+     * 	ATTENTION (Color.YELLOW, 0),
+	ENGAGEMENT (Color.GREEN, 1),
+	EXCITEMENT (Color.BLUE, 2),
+	STRESS (Color.RED, 3),
+	RELAXATION (Color.MAGENTA, 4),
+	INTEREST (Color.CYAN, 5);
+     */
     private static final String[] EMOTIONS = {
-        "Focus", "Stress", "Engagement", "Excitement", "Interest"
+        "Attention", "Engagement", "Excitement", "Stress", "Relaxation", "Interest"
     };
     private static final Color[] EMOTIONS_COLORS = {
-        Color.YELLOW, Color.RED, Color.BLUE, Color.GREEN, Color.MAGENTA
+        Color.YELLOW, Color.GREEN, Color.BLUE, Color.RED, Color.MAGENTA, Color.CYAN
     };
 
     public ColorKeyPanel() {
