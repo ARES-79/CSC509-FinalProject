@@ -7,10 +7,10 @@ import java.beans.PropertyChangeSupport;
 import java.util.Deque;
 import java.util.List;
 
+import affectTracker.TheSubscriberMQTT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import affectTracker.TheSubscriber;
 import app.Data.Highlight;
 import app.Data.ProcessedDataObject;
 
@@ -90,10 +90,10 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
    @Override
    public void propertyChange(PropertyChangeEvent evt) {
       switch (evt.getPropertyName()) {
-         case TheSubscriber.CLIENT_PROPERTY_LABEL -> {
+         case TheSubscriberMQTT.CLIENT_PROPERTY_LABEL -> {
             addSubscriberData((String) evt.getNewValue());
          }
-         case TheSubscriber.REPORT_ERROR_LABEL -> {
+         case TheSubscriberMQTT.REPORT_ERROR_LABEL -> {
             alertError((String) evt.getNewValue());
          }
       }
