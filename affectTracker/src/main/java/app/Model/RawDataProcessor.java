@@ -1,5 +1,6 @@
 package app.Model;
 
+import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import app.Data.Emotion;
+import app.Data.Highlight;
 import app.Data.ProcessedDataObject;
 
 /**
@@ -34,6 +36,8 @@ public class RawDataProcessor implements Runnable, PropertyChangeListener {
 	public static final String THREAD_NAME = "DataProcessor";
 	private static final Logger LOGGER = LoggerFactory.getLogger(RawDataProcessor.class);
 	private boolean running = false;
+   //TODO: move to ViewDataProcessor
+   private List<Highlight> currentHighlights = new ArrayList<>();
 	
 	public RawDataProcessor() {
 		Blackboard.getInstance().addPropertyChangeListener(Blackboard.STOPPED,  this);
@@ -67,6 +71,13 @@ public class RawDataProcessor implements Runnable, PropertyChangeListener {
 			List<Integer> coordinates = convertToIntegerList(eyeTrackingData);
 			List<Float> emotionScores = null;
 			Emotion prominentEmotion;
+         
+         //TODO: move this to ViewDataProcessor
+
+         Highlight highlight = new Highlight(coordinates.get(0), coordinates.get(1), Color.GRAY, 
+                                             Blackboard.getInstance().getHighlightLength());
+         currentHighlights.add(highlight);
+
 			if (emotionData != null) {
 				emotionScores = convertToFloatList(emotionData);
 				//if the emotion data is invalid, use neutral
@@ -76,6 +87,7 @@ public class RawDataProcessor implements Runnable, PropertyChangeListener {
 				} else {
 					prominentEmotion = getProminentEmotion(emotionScores);
 				}
+
 			} else {
 				prominentEmotion = Emotion.NONE;
 			}
@@ -91,6 +103,7 @@ public class RawDataProcessor implements Runnable, PropertyChangeListener {
 			);
          if (prominentEmotion != Emotion.NONE) {
             updateFrequency(prominentEmotion);
+            processCurrentHighlights(prominentEmotion.getColor());
          }
 			Blackboard.getInstance().addToProcessedDataQueue(processedData);
 		}
@@ -102,6 +115,14 @@ public class RawDataProcessor implements Runnable, PropertyChangeListener {
 			LOGGER.warn(THREAD_NAME + ": Timed out waiting for data, or one client is slow.");
 		}
 	}
+
+   private void processCurrentHighlights(Color color) {
+      for (Highlight highlight : currentHighlights) {
+         highlight.setColor(color);
+      }
+      Blackboard.getInstance().addHighlightCollection(currentHighlights);
+      currentHighlights.clear();
+   }
 
     private void updateFrequency(Emotion emotion) throws InterruptedException {
         //int index = emotion.ordinal(); // Get the index of the emotion (0-4)

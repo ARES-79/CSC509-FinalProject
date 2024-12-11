@@ -188,6 +188,12 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
    public void setHighlightList(Deque<Highlight> highlightList) {
       highlightDataDelegate.setHighlightList(highlightList);
    }
+   public void addHighlightCollection(List<Highlight> highlights) {
+      highlightDataDelegate.addHighlightCollection(highlights);
+   }
+   public List<List<Highlight>> getHighlightCollections() {
+      return highlightDataDelegate.getHighlightCollections();
+   }
    public int getThresholdLength() {
       return highlightDataDelegate.getThresholdLength();
    }

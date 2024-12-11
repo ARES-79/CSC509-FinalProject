@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Deque;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,9 +84,31 @@ public class ViewDataProcessor implements Runnable, PropertyChangeListener {
       return Math.abs(existing.getX() - newHighlight.getX()) <= Blackboard.getInstance().getThresholdLength() &&
              Math.abs(existing.getY() - newHighlight.getY()) <= Blackboard.getInstance().getThresholdLength();
    }
+
+   private void processHighlights(List<Highlight> highlights) {
+      Deque<Highlight> highlightList = Blackboard.getInstance().getHighlightList();
+      for (Highlight highlight : highlights) {
+          boolean consolidated = false;
+          for (Highlight existingHighlight : highlightList) {
+              if (isWithinThreshold(existingHighlight, highlight)) {
+                  existingHighlight.increaseLength(50); // Consolidate by increasing the length
+                  consolidated = true;
+                  break;
+              }
+          }
+          if (!consolidated) {
+              if (highlightList.size() == Blackboard.getInstance().getMaxHighlights()) {
+                  highlightList.pollFirst();
+              }
+              highlightList.addLast(highlight); // Add the new highlight
+          }
+      }
+      Blackboard.getInstance().setHighlightList(highlightList);
+   }
   
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
+      /*
 		ProcessedDataObject data = (ProcessedDataObject) evt.getNewValue();
 		//System.out.println("ViewDataProcessor: retrieved processed data: " + data);
 		if (data != null) {
@@ -95,6 +118,11 @@ public class ViewDataProcessor implements Runnable, PropertyChangeListener {
             LOGGER.error("Error processing data", e);
          }
 		}
+      */
+      if (Blackboard.PROPERTY_NAME_VIEW_DATA.equals(evt.getPropertyName())) {
+         List<Highlight> highlights = (List<Highlight>) evt.getNewValue();
+         processHighlights(highlights);
+      }
 	}
 
 }

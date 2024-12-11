@@ -35,6 +35,10 @@ public class Highlight {
       return color;
    }
 
+   public void setColor(Color color) {
+      this.color = color;
+   }
+
    public int getY() {
       return yCoord;
    }

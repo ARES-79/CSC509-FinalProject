@@ -1,5 +1,6 @@
 package app.Model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
@@ -29,6 +30,8 @@ interface EmotionDelegate {
 }
 
 interface HighlightDelegate {
+      void addHighlightCollection(List<Highlight> highlights);
+      List<List<Highlight>> getHighlightCollections();
       void addToHighlightList(Highlight data);
       public Deque<Highlight> getHighlightList();
       public void setHighlightList(Deque<Highlight> highlightList);
@@ -107,10 +110,22 @@ class EmotionDataDelegate implements EmotionDelegate {
 
 class HighlightDataDelegate implements HighlightDelegate {
    private Deque<Highlight> highlightList = new ConcurrentLinkedDeque<>();
+   private List<List<Highlight>> highlightCollections = new ArrayList<>();
    private int maxHighlights = 15;
    private int rowSize = 100;
    private int thresholdLength = 50;
    private int highlightLength = 100;
+
+   @Override
+   public void addHighlightCollection(List<Highlight> highlights) {
+      highlightCollections.add(highlights);
+      Blackboard.getInstance().firePropertyChange(Blackboard.PROPERTY_NAME_VIEW_DATA, null, highlights);
+   }
+
+   @Override
+   public List<List<Highlight>> getHighlightCollections() {
+      return highlightCollections;
+   }
 
    @Override
    public Deque<Highlight> getHighlightList() {
