@@ -111,7 +111,7 @@ class EyeTrackingDataDelegate implements EyeTrackingDelegate {
 
    @Override
    public String pollEyeTrackingQueue() throws InterruptedException {
-      return eyeTrackingQueue.poll(Blackboard.TIMEOUT_IN_MS, TimeUnit.MILLISECONDS);
+      return eyeTrackingQueue.poll(Blackboard.EYE_TIMEOUT_IN_MS, TimeUnit.MILLISECONDS);
    }
 }
 
@@ -154,7 +154,7 @@ class EmotionDataDelegate implements EmotionDelegate {
 
    @Override
    public String pollEmotionQueue() throws InterruptedException {
-      return emotionQueue.poll(200, TimeUnit.MILLISECONDS);
+      return emotionQueue.poll(Blackboard.EMOTION_TIMEOUT_IN_MS, TimeUnit.MILLISECONDS);
    }
 }
 

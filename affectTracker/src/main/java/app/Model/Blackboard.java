@@ -60,7 +60,8 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
    public static final String EYE_DATA_LABEL = "EYE";
    public static final String EMOTION_DATA_LABEL = "EMOTION";
    public static final String MQTTBROKER_ERROR = "MQTTE";
-   public static final int TIMEOUT_IN_MS = 500;
+   public static final int EYE_TIMEOUT_IN_MS = 500;
+   public static final int EMOTION_TIMEOUT_IN_MS = 200;
    private static final String PREFIX_DELIMITER = "~";
    private static final Blackboard INSTANCE = new Blackboard();
 
