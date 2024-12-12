@@ -25,5 +25,8 @@
 hs_err_pid*
 replay_pid*
 
+# Mosquitto
+*.lck
+
 # vscode settings
 .vscode/*
