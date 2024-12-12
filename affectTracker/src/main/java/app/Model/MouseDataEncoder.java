@@ -1,6 +1,6 @@
 package app.Model;
 
-import headSimulatorOneLibrary.Encoder;
+import mqttLib.Encoder;
 
 public class MouseDataEncoder implements Encoder {
 

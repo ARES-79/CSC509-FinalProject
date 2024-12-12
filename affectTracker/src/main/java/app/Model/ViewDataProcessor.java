@@ -1,7 +1,10 @@
 package app.Model;
 
-import app.Data.Circle;
+import app.Data.Emotion;
+import app.Data.Highlight;
 import app.Data.ProcessedDataObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
@@ -9,17 +12,9 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import app.Data.Circle;
-import app.Data.Emotion;
-import app.Data.Highlight;
-import app.Data.ProcessedDataObject;
-
 /**
  * The {@code ViewDataProcessor} is alerted of new processed data available in
- * the {@link Blackboard}, converts it into the appropriate {@link Circle} data
+ * the {@link Blackboard}, converts it into the appropriate {@link Highlight} data
  * for visualization.
  * <p>
  * This class implements {@link PropertyChangeListener} and is intended to be

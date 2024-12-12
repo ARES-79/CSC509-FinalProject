@@ -1,7 +1,7 @@
 package emotivLib;
 
-import headSimulatorOneLibrary.Encoder;
-import headSimulatorOneLibrary.ThePublisherMQTT;
+import mqttLib.Encoder;
+import mqttLib.ThePublisherMQTT;
 import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

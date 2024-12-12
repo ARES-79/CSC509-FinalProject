@@ -7,7 +7,7 @@ import java.beans.PropertyChangeSupport;
 import java.util.Deque;
 import java.util.List;
 
-import affectTracker.TheSubscriberMQTT;
+import mqttLib.TheSubscriberMQTT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,11 +48,6 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
    private String MqttBroker = "tcp://broker.hivemq.com:1883"; // default broker
    private String MqttEyeTopic = "app/SimulatedEyeData";
    private String MqttEmotionTopic = "app/SimulatedEmotionData";
-
-   private String eyeTrackingSocket_Host = "localhost"; // default for testing
-   private int eyeTrackingSocket_Port = 6001; // default for testing
-   private String emotionSocket_Host = "localhost"; // default for testing
-   private int emotionSocket_Port = 6000; // default for testing
 
    public static final String PROPERTY_NAME_PROCESSED_DATA = "processed data";
 
@@ -256,43 +251,11 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
    public String getFormattedConnectionSettings() {
       return String.format(
             """
-                  \t\tEye Tracking Socket IP: %s:%s
-                  \t\tEmotion Tracking Socket IP: %s:%s
+                  \t\tMQTTBroker: %s
+                  \t\tEmotion Topic: %s
+                  \t\tEye Tracking Topic: %s
                   """,
-            eyeTrackingSocket_Host, eyeTrackingSocket_Port,
-            emotionSocket_Host, emotionSocket_Port);
-   }
-
-   public String getEyeTrackingSocket_Host() {
-      return eyeTrackingSocket_Host;
-   }
-
-   public int getEyeTrackingSocket_Port() {
-      return eyeTrackingSocket_Port;
-   }
-
-   public String getEmotionSocket_Host() {
-      return emotionSocket_Host;
-   }
-
-   public int getEmotionSocket_Port() {
-      return emotionSocket_Port;
-   }
-
-   public void setEyeTrackingSocket_Host(String eyeTrackingSocket_Host) {
-      this.eyeTrackingSocket_Host = eyeTrackingSocket_Host;
-   }
-
-   public void setEyeTrackingSocket_Port(int eyeTrackingSocket_Port) {
-      this.eyeTrackingSocket_Port = eyeTrackingSocket_Port;
-   }
-
-   public void setEmotionSocket_Host(String emotionSocket_Host) {
-      this.emotionSocket_Host = emotionSocket_Host;
-   }
-
-   public void setEmotionSocket_Port(int emotionSocket_Port) {
-      this.emotionSocket_Port = emotionSocket_Port;
+            MqttBroker, MqttEmotionTopic, MqttEyeTopic);
    }
 
    public void reportEyeThreadError(String ex_message) {

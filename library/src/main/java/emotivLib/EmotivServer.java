@@ -1,6 +1,6 @@
 package emotivLib;
 
-import headSimulatorOneLibrary.Encoder;
+import mqttLib.Encoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
