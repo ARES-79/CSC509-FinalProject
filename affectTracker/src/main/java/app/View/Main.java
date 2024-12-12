@@ -161,8 +161,7 @@ public class Main extends JFrame {
     */
    private void startServerThreads() {
       EmotivServer emotivServer = new EmotivServer(Blackboard.getInstance().getMqttBroker(),
-            "MQTTEmotionServer", Blackboard.getInstance().getMqttEmotionTopic()
-              , message -> message);
+            "MQTTEmotionServer", Blackboard.getInstance().getMqttEmotionTopic(), message -> message);
       Thread emotivDataThread = new Thread(emotivServer);
       emotivDataThread.start();
    }

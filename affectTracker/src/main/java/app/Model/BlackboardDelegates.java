@@ -179,6 +179,12 @@ class HighlightDataDelegate implements HighlightDelegate {
 
    @Override
    public void updateHighlightColors(Color color) {
+      if (highlightList.get(0).getColor() != Color.GRAY) {
+         // No new highlights have been drawn since the last update
+         Blackboard.getInstance().firePropertyChange(Blackboard.PROPERTY_NAME_VIEW_DATA,
+               null, highlightList);
+         return;
+      }
       for (Highlight highlight : highlightList) {
          highlight.setColor(color);
       }

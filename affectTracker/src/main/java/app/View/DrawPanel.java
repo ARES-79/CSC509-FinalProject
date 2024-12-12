@@ -73,6 +73,7 @@ public class DrawPanel extends JPanel implements PropertyChangeListener {
    public DrawPanel() {
       setBackground(Color.WHITE);
       setBorder(new MatteBorder(3, 3, 3, 3, Color.BLACK));
+      Blackboard.getInstance().addPropertyChangeListener(Blackboard.PROPERTY_NAME_VIEW_DATA, this);
    }
 
    /**
@@ -107,6 +108,7 @@ public class DrawPanel extends JPanel implements PropertyChangeListener {
             highlight.drawHighlight(g);
          }
       }
+      g.setColor(Color.BLACK);
    }
 
    /**
@@ -149,27 +151,29 @@ public class DrawPanel extends JPanel implements PropertyChangeListener {
     */
    @Override
    public void propertyChange(PropertyChangeEvent evt) {
-      if (evt.getNewValue() instanceof Highlight) {
-         // Handle single Highlight
-         Highlight newHighlight = (Highlight) evt.getNewValue();
-         this.highlightList.add(newHighlight);
-         repaint();
-      } else if (evt.getNewValue() instanceof List<?>) {
-         List<?> newList = (List<?>) evt.getNewValue();
-         if (!newList.isEmpty()) {
-            if (newList.get(0) instanceof Highlight) {
-               // Handle list of Highlights
-               List<Highlight> newHighlightList = (List<Highlight>) newList;
-               this.globalHighlightList.add(newHighlightList);
-               repaint();
+      if (Blackboard.PROPERTY_NAME_VIEW_DATA.equals(evt.getPropertyName())) {
+         if (evt.getNewValue() instanceof Highlight) {
+            // Handle single Highlight
+            Highlight newHighlight = (Highlight) evt.getNewValue();
+            this.highlightList.add(newHighlight);
+            repaint();
+         } else if (evt.getNewValue() instanceof List<?>) {
+            List<?> newList = (List<?>) evt.getNewValue();
+            if (!newList.isEmpty()) {
+               if (newList.get(0) instanceof Highlight) {
+                  // Handle list of Highlights
+                  List<Highlight> newHighlightList = (List<Highlight>) newList;
+                  this.globalHighlightList.add(newHighlightList);
+                  repaint();
+               } else {
+                  log.warn("Unexpected payload in PropertyChangeEvent: {}", evt.getNewValue());
+               }
             } else {
                log.warn("Unexpected payload in PropertyChangeEvent: {}", evt.getNewValue());
             }
          } else {
             log.warn("Unexpected payload in PropertyChangeEvent: {}", evt.getNewValue());
          }
-      } else {
-         log.warn("Unexpected payload in PropertyChangeEvent: {}", evt.getNewValue());
       }
    }
 }

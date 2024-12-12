@@ -17,7 +17,7 @@ public class Highlight {
 
    public Highlight(int xCoord, int yCoord, Color color, int length) {
       this.xCoord = xCoord;
-      //this.yCoord = roundToNearestRowSize(yCoord) + 50;
+      // this.yCoord = roundToNearestRowSize(yCoord) + 50;
       this.yCoord = yCoord;
       this.color = color;
       this.length = length;
@@ -64,13 +64,17 @@ public class Highlight {
    public void drawHighlight(Graphics g) {
       Graphics2D g2d = (Graphics2D) g;
 
+      // Save the original composite
+      AlphaComposite originalComposite = (AlphaComposite) g2d.getComposite();
+
       // Set the opacity for the highlight
       AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity);
       g2d.setComposite(alphaComposite);
 
       g2d.setColor(color);
-      g2d.fillRect(xCoord - (length /2), yCoord, length, rowSize / 3);
+      g2d.fillRect(xCoord - (length / 2), yCoord, length, rowSize / 3);
 
-      g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+      // Reset the composite to the original
+      g2d.setComposite(originalComposite);
    }
 }
