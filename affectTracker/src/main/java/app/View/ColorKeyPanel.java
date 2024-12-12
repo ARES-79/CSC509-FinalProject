@@ -47,7 +47,7 @@ public class ColorKeyPanel extends JPanel implements PropertyChangeListener {
          "Attention", "Engagement", "Excitement", "Stress", "Relaxation", "Interest"
    };
    private static final Color[] EMOTIONS_COLORS = {
-         Color.YELLOW, Color.GREEN, Color.BLUE, Color.RED, Color.MAGENTA, Color.CYAN
+         Color.PINK, Color.GREEN, Color.BLUE, Color.RED, Color.MAGENTA, Color.CYAN
    };
 
    /**
@@ -66,7 +66,7 @@ public class ColorKeyPanel extends JPanel implements PropertyChangeListener {
       }
 
       // Register this panel to listen to changes in the Blackboard
-      Blackboard.getInstance().addPropertyChangeListener(Blackboard.PROPERTY_NAME_PROCESSED_DATA, this);
+      Blackboard.getInstance().addPropertyChangeListener(Blackboard.PROPERTY_NAME_VIEW_DATA, this);
    }
 
    /**
@@ -145,7 +145,7 @@ public class ColorKeyPanel extends JPanel implements PropertyChangeListener {
     */
    @Override
    public void propertyChange(PropertyChangeEvent evt) {
-      if (Blackboard.PROPERTY_NAME_PROCESSED_DATA.equals(evt.getPropertyName())) {
+      if (Blackboard.PROPERTY_NAME_VIEW_DATA.equals(evt.getPropertyName())) {
          updateFrequencies();
       }
    }

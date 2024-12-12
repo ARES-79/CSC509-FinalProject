@@ -207,6 +207,7 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
 
    public void setHighlightList(List<Highlight> highlightList) {
       highlightDataDelegate.setHighlightList(highlightList);
+      firePropertyChange(PROPERTY_NAME_VIEW_DATA, null, highlightList);
    }
 
    public void addHighlightCollection(List<Highlight> highlights) {
