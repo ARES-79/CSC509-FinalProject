@@ -154,7 +154,7 @@ class EmotionDataDelegate implements EmotionDelegate {
 
    @Override
    public String pollEmotionQueue() throws InterruptedException {
-      return emotionQueue.poll(Blackboard.TIMEOUT_IN_MS, TimeUnit.MILLISECONDS);
+      return emotionQueue.poll(200, TimeUnit.MILLISECONDS);
    }
 }
 
