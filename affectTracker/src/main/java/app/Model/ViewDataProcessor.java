@@ -108,6 +108,15 @@ public class ViewDataProcessor implements Runnable, PropertyChangeListener {
    private void handleProcessedData(ProcessedDataObject data) throws InterruptedException {
       List<Highlight> highlightList = Blackboard.getInstance().getHighlightList();
       Color color = data.prominentEmotion().getColor();
+      if (data.xCoord() == -1 || data.yCoord() == -1) {
+         // emotion data without eye tracking, update colors
+         LOGGER.info("Missing eye tracking data, updating highlight colors");
+         Blackboard.getInstance().updateHighlightColors(color);
+         Blackboard.getInstance().addHighlightCollection(highlightList);
+         updateFrequency(data.prominentEmotion());
+         Blackboard.getInstance().setHighlightList(highlightList);
+         return;
+      }
 
       Highlight newHighlight = new Highlight(data.xCoord(), data.yCoord(), color,
             Blackboard.getInstance().getHighlightLength());

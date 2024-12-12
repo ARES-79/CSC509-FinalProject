@@ -110,7 +110,16 @@ public class RawDataProcessor implements Runnable, PropertyChangeListener {
       }
       // debugging client/server communication
       else if (emotionData != null) {
-         LOGGER.warn(THREAD_NAME + ": Eye-tracking data is missing, but emotion data is present.");
+         // create a processed data object with no eye tracking data
+         List<Float> emotionScores = convertToFloatList(emotionData);
+         Emotion prominentEmotion = getProminentEmotion(emotionScores);
+         ProcessedDataObject processedData = new ProcessedDataObject(
+               -1,
+               -1,
+               prominentEmotion,
+               emotionScores);
+         LOGGER.info("Processed data created: " + processedData);
+         Blackboard.getInstance().addToProcessedDataQueue(processedData);
       } else {
          // Handle timeout case or missing data
          LOGGER.warn(THREAD_NAME + ": Timed out waiting for data, or one client is slow.");
