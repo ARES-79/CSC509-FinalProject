@@ -50,7 +50,8 @@ public class EmotivMQTTDelegate {
             if (isActive) {
                 emotionTable[i] = emotions.getDouble(valueIdx);
             } else {
-                emotionTable[i] = 0;
+                // inactive emotion
+                emotionTable[i] = -1;
             }
         }
         return emotionTable;
