@@ -9,7 +9,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-import affectTracker.TheSubscriberMQTT;
+import mqttLib.TheSubscriberMQTT;
 import app.Controller.MQTTMouseServer;
 import app.Controller.MainController;
 import app.Model.Blackboard;
@@ -17,7 +17,7 @@ import app.Model.MouseDataEncoder;
 import app.Model.RawDataProcessor;
 import app.Model.ViewDataProcessor;
 import emotivLib.EmotivServer;
-import headSimulatorOneLibrary.Encoder;
+import mqttLib.Encoder;
 
 /**
  * The {@code Main} class serves as the entry point for the Eye Tracking &
@@ -38,11 +38,6 @@ import headSimulatorOneLibrary.Encoder;
  * </p>
  * 
  * <p>
- * If run with the "-test" flag, this class will also start the test servers for
- * emotion and eye-tracking data.
- * </p>
- * 
- * <p>
  * Code Metrics:
  * - Number of Methods: 12
  * - Lines of Code (LOC): 160
@@ -59,7 +54,6 @@ import headSimulatorOneLibrary.Encoder;
  * @version 1.0
  */
 public class Main extends JFrame {
-   private static final String TESTING_FLAG = "-test";
    private TheSubscriberMQTT mqttSubscriber = null;
    private final DrawPanel drawPanel;
 
@@ -139,8 +133,9 @@ public class Main extends JFrame {
       drawPanel.addMouseMotionListener(mqttServer);
 
       HashMap<String, String> topicsAndPrefixes = new HashMap<>();
-      topicsAndPrefixes.put("app/SimulatedEyeData", Blackboard.EYE_DATA_LABEL);
-      topicsAndPrefixes.put("app/SimulatedEmotionData", Blackboard.EMOTION_DATA_LABEL);
+
+      topicsAndPrefixes.put(Blackboard.getInstance().getMqttEyeTopic(), Blackboard.EYE_DATA_LABEL);
+      topicsAndPrefixes.put(Blackboard.getInstance().getMqttEmotionTopic(), Blackboard.EMOTION_DATA_LABEL);
 
       mqttSubscriber = new TheSubscriberMQTT(Blackboard.getInstance().getMqttBroker(), "readingHub",
             topicsAndPrefixes, Blackboard.getInstance());
@@ -165,10 +160,9 @@ public class Main extends JFrame {
     * Starts the server threads for testing purposes.
     */
    private void startServerThreads() {
-      System.out.println("Starting test servers.");
-
       EmotivServer emotivServer = new EmotivServer(Blackboard.getInstance().getMqttBroker(),
-            "MQTTEmotionServer", "app/SimulatedEmotionData", message -> message);
+            "MQTTEmotionServer", Blackboard.getInstance().getMqttEmotionTopic()
+              , message -> message);
       Thread emotivDataThread = new Thread(emotivServer);
       emotivDataThread.start();
    }
@@ -186,9 +180,6 @@ public class Main extends JFrame {
       window.setLocationRelativeTo(null);
       window.setVisible(true);
       window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      if (args.length > 0 && args[0].equals(TESTING_FLAG)) {
-         System.out.println(args[0]);
-         window.startServerThreads();
-      }
+      window.startServerThreads();
    }
 }

@@ -1,4 +1,4 @@
-package headSimulatorOneLibrary;
+package mqttLib;
 
 public interface Encoder {
 
