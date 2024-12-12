@@ -1,6 +1,6 @@
 package app.Data;
 
-import java.awt.*;
+import java.awt.Color;
 
 
 /**
@@ -38,6 +38,15 @@ public enum Emotion {
 	public int getValue() {
 		return value;
 	}
+
+   public static Emotion getEmotionByColor(Color color) {
+      for (Emotion e : Emotion.values()) {
+         if (e.getColor().equals(color)) {
+            return e;
+         }
+      }
+      return null;
+   }
 	
 	public static Emotion getByValue(int number) {
 		for (Emotion e : Emotion.values()) {
