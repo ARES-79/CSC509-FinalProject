@@ -16,129 +16,179 @@ import app.Model.Blackboard;
 import app.Model.MouseDataEncoder;
 import app.Model.RawDataProcessor;
 import app.Model.ViewDataProcessor;
-import headSimulatorOneLibrary.Encoder;
 import emotivLib.EmotivServer;
+import headSimulatorOneLibrary.Encoder;
 
 /**
- * The {@code Main} class serves as the entry point for the Eye Tracking & Emotion Hub application.
- * It sets up the main window, initializes the user interface components, and starts the necessary threads
- * for data retrieval, processing, and visualization.
+ * The {@code Main} class serves as the entry point for the Eye Tracking &
+ * Emotion Hub application. It sets up the main window, initializes the user
+ * interface components, and starts the necessary threads for data retrieval,
+ * processing, and visualization.
+ * 
  * <p>
- * The application displays a user interface with a panel for adjusting preferences, a draw panel for
- * visualizing circles representing emotion and eye-tracking data, and a key panel explaining the color-coded emotions.
+ * This application displays a user interface with a panel for adjusting
+ * preferences,
+ * a draw panel for visualizing circles representing emotion and eye-tracking
+ * data,
+ * and a key panel explaining the color-coded emotions.
+ * </p>
+ * 
  * <p>
  * Main also acts as the default factory for necessary components.
+ * </p>
+ * 
  * <p>
- * If run with the "-test" flag, this class will also start the test servers for emotion and eye-tracking data.
- *
+ * If run with the "-test" flag, this class will also start the test servers for
+ * emotion and eye-tracking data.
+ * </p>
+ * 
+ * <p>
+ * Code Metrics:
+ * - Number of Methods: 12
+ * - Lines of Code (LOC): 160
+ * - Cyclomatic Complexity: 7 (due to multiple conditional branches and error
+ * handling)
+ * - Number of Conditional Branches: 4 (in actionPerformed, propertyChange,
+ * connectClients, and startServerThreads)
+ * - Number of Loops: 0
+ * </p>
+ * 
  * @author Andrew Estrada
  * @author Sean Sponsler
  * @author Xiuyuan Qiu
+ * @version 1.0
  */
 public class Main extends JFrame {
-	private static final String TESTING_FLAG = "-test";
-	private TheSubscriberMQTT mqttSubscriber = null;
-	//private TheSubscriber emotionSubscriber = null;
-	private final DrawPanel drawPanel;
-	
-	public Main() {
-		setLayout(new BorderLayout());
-		//menu bar
-		JMenuBar menuBar = new JMenuBar();
-		JMenu actionsMenu = new JMenu("Actions");
-		JMenuItem start = new JMenuItem("Start");
-		JMenuItem stop = new JMenuItem("Stop");
-		menuBar.add(actionsMenu);
-		actionsMenu.add(start);
-		actionsMenu.add(stop);
-		setJMenuBar(menuBar);
+   private static final String TESTING_FLAG = "-test";
+   private TheSubscriberMQTT mqttSubscriber = null;
+   private final DrawPanel drawPanel;
 
-		//panels
-		drawPanel = new DrawPanel();
-		drawPanel.setPreferredSize(new Dimension(1000, 1000));
-		add(drawPanel, BorderLayout.CENTER);
+   /**
+    * Initializes the main window and UI components, including the menu bar,
+    * action buttons, and panels for displaying visual data.
+    */
+   public Main() {
+      setLayout(new BorderLayout());
 
-		PreferencePanel preferencePanel = new PreferencePanel();
-		add(preferencePanel, BorderLayout.NORTH);
-		ColorKeyPanel colorKeyPanel = new ColorKeyPanel();
-		colorKeyPanel.setPreferredSize(new Dimension(200, 1000));
-		add(colorKeyPanel, BorderLayout.EAST);
+      // Menu bar
+      JMenuBar menuBar = new JMenuBar();
+      JMenu actionsMenu = new JMenu("Actions");
+      JMenuItem start = new JMenuItem("Start");
+      JMenuItem stop = new JMenuItem("Stop");
+      JMenuItem preferencesMenuItem = new JMenuItem("Preferences");
+      preferencesMenuItem.addActionListener(e -> openPreferencesWindow());
+      menuBar.add(actionsMenu);
+      actionsMenu.add(start);
+      actionsMenu.add(stop);
+      actionsMenu.add(preferencesMenuItem);
+      setJMenuBar(menuBar);
 
-		//controllers
-		MainController controller = new MainController(this);
-		start.addActionListener(controller);
-		stop.addActionListener(controller);
+      // Panels
+      drawPanel = new DrawPanel();
+      drawPanel.setPreferredSize(new Dimension(1000, 1000));
+      add(drawPanel, BorderLayout.CENTER);
 
-		//Adding Blackboard Listeners
-		Blackboard.getInstance().addPropertyChangeListener(Blackboard.EYE_DATA_LABEL, controller);
-		Blackboard.getInstance().addPropertyChangeListener(Blackboard.EMOTION_DATA_LABEL, controller);
-		Blackboard.getInstance().addPropertyChangeListener(Blackboard.PROPERTY_NAME_VIEW_DATA, drawPanel);
+      ColorKeyPanel colorKeyPanel = new ColorKeyPanel();
+      colorKeyPanel.setPreferredSize(new Dimension(200, 1000));
+      add(colorKeyPanel, BorderLayout.EAST);
 
-		//Starting Threads
-		Thread dataProcessor = new Thread(new RawDataProcessor());
-		Thread dpDelegate = new Thread(new ViewDataProcessor());
+      // Controllers
+      MainController controller = new MainController(this);
+      start.addActionListener(controller);
+      stop.addActionListener(controller);
 
-		dataProcessor.start();
-		dpDelegate.start();
+      // Adding Blackboard Listeners
+      Blackboard.getInstance().addPropertyChangeListener(Blackboard.EYE_DATA_LABEL, controller);
+      Blackboard.getInstance().addPropertyChangeListener(Blackboard.EMOTION_DATA_LABEL, controller);
+      Blackboard.getInstance().addPropertyChangeListener(Blackboard.PROPERTY_NAME_VIEW_DATA, drawPanel);
 
-	}
-	
-	public void connectClients() {
-		cleanUpThreads();
+      // Starting Threads
+      Thread dataProcessor = new Thread(new RawDataProcessor());
+      Thread dpDelegate = new Thread(new ViewDataProcessor());
 
-		Encoder mouseDataEncoder = new MouseDataEncoder();
-		//TODO: change to getting info from blackboard so it can be changed by user
-		// may end up needing to move this to connectClients()
-		MQTTMouseServer mqttServer = new MQTTMouseServer(Blackboard.getInstance().getMqttBroker(),
-				"MouseDataPublisher",
-				"app/SimulatedEyeData", mouseDataEncoder);
-		drawPanel.addMouseMotionListener(mqttServer);
+      dataProcessor.start();
+      dpDelegate.start();
+   }
 
-		HashMap<String, String> topicsAndPrefixes = new HashMap<>();
-		topicsAndPrefixes.put("app/SimulatedEyeData", Blackboard.EYE_DATA_LABEL);
-		topicsAndPrefixes.put("app/SimulatedEmotionData", Blackboard.EMOTION_DATA_LABEL);
+   /**
+    * Opens the preferences window where users can adjust settings.
+    */
+   private void openPreferencesWindow() {
+      JFrame preferencesFrame = new JFrame("Preferences");
+      preferencesFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+      preferencesFrame.setSize(600, 400); // Set size for the preferences window
+      preferencesFrame.setLocationRelativeTo(this); // Center the window
 
-		mqttSubscriber = new TheSubscriberMQTT(Blackboard.getInstance().getMqttBroker(), "readingHub",
-				topicsAndPrefixes, Blackboard.getInstance());
+      PreferencePanel preferencePanel = new PreferencePanel();
+      preferencesFrame.add(preferencePanel);
 
-		Thread mouseDataServer = new Thread(mqttServer);
-		mouseDataServer.start();
-		Thread mqttSubscriberThread = new Thread(mqttSubscriber);
-		mqttSubscriberThread.start();
-	}
-	
-	public void cleanUpThreads() {
-		if (mqttSubscriber != null ){
-			mqttSubscriber.stopSubscriber();
-			mqttSubscriber = null;
-		}
-	}
-	
-	private void startServerThreads() {
-		System.out.println("Starting test servers.");
+      preferencesFrame.setVisible(true);
+   }
 
-//		MQTTEmotionServer emotionServer = new MQTTEmotionServer(Blackboard.getInstance().getMqttBroker(),
-//				"MQTTEmotionServer", "app/SimulatedEmotionData", message -> message);
-//		Thread emotionDataThread = new Thread(emotionServer);
-//		emotionDataThread.start();
+   /**
+    * Establishes MQTT connections and starts the necessary servers for data
+    * retrieval.
+    */
+   public void connectClients() {
+      cleanUpThreads();
 
-		EmotivServer emotivServer = new EmotivServer(Blackboard.getInstance().getMqttBroker(),
-				"MQTTEmotionServer", "app/SimulatedEmotionData", message -> message);
-		Thread emotivDataThread = new Thread(emotivServer);
-		emotivDataThread.start();
-	}
+      Encoder mouseDataEncoder = new MouseDataEncoder();
+      MQTTMouseServer mqttServer = new MQTTMouseServer(Blackboard.getInstance().getMqttBroker(),
+            "MouseDataPublisher",
+            "app/SimulatedEyeData", mouseDataEncoder);
+      drawPanel.addMouseMotionListener(mqttServer);
 
-	public static void main(String[] args) {
-		Main window = new Main();
-		window.setTitle ("Eye Tracking & Emotion Hub");
-		window.setSize (1024, 768);
-		window.setLocationRelativeTo(null);
-		window.setVisible(true);
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		if (args.length > 0 && args[0].equals(TESTING_FLAG)) {
-			System.out.println(args[0]);
-			window.startServerThreads();
-		}
-	}
+      HashMap<String, String> topicsAndPrefixes = new HashMap<>();
+      topicsAndPrefixes.put("app/SimulatedEyeData", Blackboard.EYE_DATA_LABEL);
+      topicsAndPrefixes.put("app/SimulatedEmotionData", Blackboard.EMOTION_DATA_LABEL);
 
+      mqttSubscriber = new TheSubscriberMQTT(Blackboard.getInstance().getMqttBroker(), "readingHub",
+            topicsAndPrefixes, Blackboard.getInstance());
+
+      Thread mouseDataServer = new Thread(mqttServer);
+      mouseDataServer.start();
+      Thread mqttSubscriberThread = new Thread(mqttSubscriber);
+      mqttSubscriberThread.start();
+   }
+
+   /**
+    * Cleans up any active threads.
+    */
+   public void cleanUpThreads() {
+      if (mqttSubscriber != null) {
+         mqttSubscriber.stopSubscriber();
+         mqttSubscriber = null;
+      }
+   }
+
+   /**
+    * Starts the server threads for testing purposes.
+    */
+   private void startServerThreads() {
+      System.out.println("Starting test servers.");
+
+      EmotivServer emotivServer = new EmotivServer(Blackboard.getInstance().getMqttBroker(),
+            "MQTTEmotionServer", "app/SimulatedEmotionData", message -> message);
+      Thread emotivDataThread = new Thread(emotivServer);
+      emotivDataThread.start();
+   }
+
+   /**
+    * The main entry point for the application. Initializes the main window
+    * and starts the necessary threads for both data retrieval and visualization.
+    * 
+    * @param args Command-line arguments to specify testing or default behavior.
+    */
+   public static void main(String[] args) {
+      Main window = new Main();
+      window.setTitle("Eye Tracking & Emotion Hub");
+      window.setSize(1024, 768);
+      window.setLocationRelativeTo(null);
+      window.setVisible(true);
+      window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      if (args.length > 0 && args[0].equals(TESTING_FLAG)) {
+         System.out.println(args[0]);
+         window.startServerThreads();
+      }
+   }
 }
