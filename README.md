@@ -1,8 +1,8 @@
 # CSC509-FinalProject: Reading &amp; Emotion Tracker
 
 Authors:
-Andrew Estrada
-Sean Sponsler
+Andrew Estrada, 
+Sean Sponsler, 
 Xiuyuan Qiu
 
 ## Project Overview
