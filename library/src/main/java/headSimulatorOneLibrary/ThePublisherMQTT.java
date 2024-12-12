@@ -26,7 +26,6 @@ public class ThePublisherMQTT{
     private MqttClient client;
     private static final Logger logger = LoggerFactory.getLogger(ThePublisherMQTT.class);
 
-
     public ThePublisherMQTT(String broker, String clientId, Encoder encoder){
 
         this.BROKER = broker;
@@ -55,7 +54,7 @@ public class ThePublisherMQTT{
     public void disconnect(){
         try {
             client.disconnect();
-            System.out.println(CLIENT_ID + " disconnected from " + BROKER);
+            logger.info(CLIENT_ID + " disconnected from " + BROKER);
         } catch (MqttException e) {
             logger.error("Error in Publisher", e);
         }

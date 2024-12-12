@@ -1,6 +1,9 @@
 package app.Model;
 
-import java.awt.Color;
+import app.Data.Circle;
+import app.Data.ProcessedDataObject;
+
+import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -43,7 +46,7 @@ import app.Data.ProcessedDataObject;
  * updateFrequency involving loops)
  * - Number of Conditional Branches: 7 (includes 'if' statements and loop for
  * consolidating highlights)
- * 
+ *
  * @author Andrew Estrada
  * @author Sean Sponsler
  * @author Xiuyuan Qiu
@@ -97,7 +100,7 @@ public class ViewDataProcessor implements Runnable, PropertyChangeListener {
    /**
     * Handles incoming processed data, updates the highlights, and updates
     * frequency data.
-    * 
+    *
     * @param data The {@link ProcessedDataObject} containing the processed data.
     * @throws InterruptedException If the thread is interrupted while handling the
     *                              data.
@@ -131,7 +134,7 @@ public class ViewDataProcessor implements Runnable, PropertyChangeListener {
    /**
     * Determines whether two highlights are within a threshold distance of each
     * other.
-    * 
+    *
     * @param existing     The existing highlight.
     * @param newHighlight The new highlight to compare.
     * @return True if the highlights are within the threshold distance; otherwise,
@@ -146,7 +149,7 @@ public class ViewDataProcessor implements Runnable, PropertyChangeListener {
     * Updates the frequency of emotions based on the processed data.
     * This method updates the count of each emotion and recalculates the
     * percentage.
-    * 
+    *
     * @param emotion The emotion whose frequency is being updated.
     * @throws InterruptedException If the thread is interrupted while updating the
     *                              frequency.
@@ -168,7 +171,7 @@ public class ViewDataProcessor implements Runnable, PropertyChangeListener {
    /**
     * Handles property change events triggered by updates in the Blackboard.
     * This method is called whenever processed data is available.
-    * 
+    *
     * @param evt The property change event containing the new processed data.
     */
    @Override

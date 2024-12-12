@@ -10,6 +10,8 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * EmotivSocket is a WebSocket client that connects to the emotivLib server.
@@ -23,8 +25,9 @@ import org.json.JSONObject;
  */
 public class EmotivSocket extends WebSocketClient {
 
-    private EmotivLauncherDelegate launcherDelegate;
-    private EmotivMQTTDelegate mqttDelegate;
+    private final EmotivLauncherDelegate launcherDelegate;
+    private final EmotivMQTTDelegate mqttDelegate;
+    private final Logger logger = LoggerFactory.getLogger(EmotivSocket.class);
 
     private static final TrustManager[] trustAllCerts = new TrustManager[]{
             new X509TrustManager() {
@@ -53,17 +56,17 @@ public class EmotivSocket extends WebSocketClient {
 
     @Override
     public void onOpen(ServerHandshake handshake) {
-        System.out.println("Connected to Emotiv server: " + getURI());
+        logger.info("Connected to Emotiv server: {}", getURI());
         launcherDelegate.handle (0, null, this);
     }
 
     public Boolean handleServerEx(JSONObject res) {
         if (res.has("error")) {
             JSONObject err = res.getJSONObject("error");
-            System.out.println("Server Error: " + err.getString("message"));
+            logger.error("Launcher Error: {}: {}", err.getString("message"), err);
         } else if (res.has("warning")) {
             JSONObject warn = res.getJSONObject("warning");
-            System.out.println("Server Warning: " + warn);
+            logger.warn("Launcher Warning: {}", warn);
         } else {
             return false;
         }
@@ -71,14 +74,14 @@ public class EmotivSocket extends WebSocketClient {
     }
     @Override
     public void onMessage(String message) {
-        System.out.println("Received message from Emotiv server.");
+        logger.info("Received message from Emotiv server.");
         JSONObject response = new JSONObject(message);
         Boolean serverExceptionHappened = handleServerEx(response);
         if (!serverExceptionHappened) {
             if (!launcherDelegate.isSubscribed()) {
                 int id = response.getInt("id");
                 Object result = response.get("result");
-                launcherDelegate.handle (id, result, this);
+                launcherDelegate.handle(id, result, this);
             } else {
                 float time = new JSONObject(message).getFloat("time");
                 JSONObject object = new JSONObject(message);
@@ -90,9 +93,9 @@ public class EmotivSocket extends WebSocketClient {
                     array = object.getJSONArray("dev");
                 } else if (object.has("met")) {
                     array = object.getJSONArray("met");
-                    mqttDelegate.handleEmotions(array);
+                    mqttDelegate.publishEmotions(array);
                 }
-                System.out.println(time + " :: " + array);
+                logger.info("{} :: {}", time, array);
             }
         }
 
@@ -100,12 +103,12 @@ public class EmotivSocket extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        System.out.println("Connection closed with code " + code + " and reason " + reason);
+        logger.info("Connection closed with code {} and reason {}", code, reason);
     }
 
     @Override
     public void onError(Exception ex) {
-        System.out.println("Error: " + ex);
+        logger.error("Error: {}", String.valueOf(ex));
     }
 
 }

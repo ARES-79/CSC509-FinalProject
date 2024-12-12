@@ -3,6 +3,8 @@ package emotivLib;
 import org.java_websocket.client.WebSocketClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * EmotivLauncherDelegate follows CortexAPI protocol to set up a connection
@@ -18,6 +20,7 @@ public class EmotivLauncherDelegate {
 
     public static final String CLIENT_ID = System.getenv("CLIENT_ID");
     public static final String CLIENT_SECRET = System.getenv("CLIENT_SECRET");
+    private final Logger logger = LoggerFactory.getLogger(EmotivLauncherDelegate.class);
 
     private boolean subscribed = false;
     private String cortexToken = null;
@@ -26,7 +29,7 @@ public class EmotivLauncherDelegate {
     private String session = null;
 
     public void getCortexInfo(WebSocketClient ws) {
-        System.out.println("getCortexInfo: done!");
+        logger.info("getCortexInfo: done!");
         JSONObject message = new JSONObject();
         message.put("id", 1);
         message.put("jsonrpc", "2.0");
@@ -35,7 +38,7 @@ public class EmotivLauncherDelegate {
     }
 
     public void requestAccess(WebSocketClient ws) {
-        System.out.println("requestAccess: done!");
+        logger.info("requestAccess: done!");
         JSONObject message = new JSONObject();
         message.put("id", 2);
         message.put("jsonrpc", "2.0");
@@ -48,7 +51,7 @@ public class EmotivLauncherDelegate {
     }
 
     public void authorize(WebSocketClient ws) {
-        System.out.println("authorize: done!");
+        logger.info("authorize: done!");
         JSONObject message = new JSONObject();
         message.put("id", 3);
         message.put("jsonrpc", "2.0");
@@ -62,7 +65,7 @@ public class EmotivLauncherDelegate {
     }
 
     public void getUserInformation(WebSocketClient ws) {
-        System.out.println("getUserInformation");
+        logger.info("getUserInformation");
         if (cortexToken != null) {
             JSONObject message = new JSONObject();
             message.put("id", 4);
@@ -74,7 +77,7 @@ public class EmotivLauncherDelegate {
     }
 
     public void queryHeadsets(WebSocketClient ws) {
-        System.out.println("queryHeadsets");
+        logger.info("queryHeadsets");
         JSONObject message = new JSONObject();
         message.put("id", 5);
         message.put("jsonrpc", "2.0");
@@ -84,7 +87,7 @@ public class EmotivLauncherDelegate {
 
     public void createSession(WebSocketClient ws) {
         if (cortexToken != null && headset != null) {
-            System.out.println("createSession");
+            logger.info("createSession");
             JSONObject message = new JSONObject();
             message.put("id", 6);
             message.put("jsonrpc", "2.0");
@@ -99,7 +102,7 @@ public class EmotivLauncherDelegate {
     }
 
     public void subscribe(WebSocketClient ws) {
-        System.out.println("subscribe");
+        logger.info("subscribe");
         if (cortexToken != null && session != null) {
             JSONObject message = new JSONObject();
             message.put("id", 7);
@@ -116,7 +119,7 @@ public class EmotivLauncherDelegate {
     }
 
     public void handle(int id, Object result, WebSocketClient ws) {
-        System.out.println("Handle: " + id);
+        logger.info("Handle: " + id);
         JSONObject myJsonObj;
         switch (id) {
             case 0:
@@ -135,7 +138,7 @@ public class EmotivLauncherDelegate {
                 break;
             case 4:
                 myJsonObj = new JSONObject(result.toString());
-                System.out.println(">>>> getUserInformation: " + myJsonObj.toString());
+                logger.info(">>>> getUserInformation: " + myJsonObj);
                 firstName = myJsonObj.getString("firstName");
                 lastName = myJsonObj.getString("lastName");
                 userName = myJsonObj.getString("username");
