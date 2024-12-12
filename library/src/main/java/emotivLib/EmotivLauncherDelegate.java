@@ -18,8 +18,8 @@ import org.slf4j.LoggerFactory;
  */
 public class EmotivLauncherDelegate {
 
-    public static final String CLIENT_ID = System.getenv("CLIENT_ID");
-    public static final String CLIENT_SECRET = System.getenv("CLIENT_SECRET");
+    public static final String CLIENT_ID = "LbEneTYYj3XKBNyfsFeMoINSjJsdvHmzwkSThrqZ";
+    public static final String CLIENT_SECRET = "KHh2aryFaBOCdydZli0sMQ4gduOn62sAd82AVJRESEH0tVAOtufnCyY0Zs8vBCjPgDJvTRGB1VPsa8lETfXBLg6i5ecdQqA9hn2OXytf0OPA3bCoySEFc76xzb7qScge";
     private final Logger logger = LoggerFactory.getLogger(EmotivLauncherDelegate.class);
 
     private boolean subscribed = false;
