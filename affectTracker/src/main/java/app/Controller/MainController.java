@@ -94,6 +94,8 @@ public class MainController implements ActionListener, PropertyChangeListener {
          }
          case Blackboard.MQTTBROKER_ERROR ->
             JOptionPane.showMessageDialog(parent, String.format(MQTTFAIL_STRING, evt.getNewValue().toString()));
+         case Blackboard.MQTT_CONN_SUCCESS ->
+            JOptionPane.showMessageDialog(parent, evt.getNewValue().toString());
       }
    }
 

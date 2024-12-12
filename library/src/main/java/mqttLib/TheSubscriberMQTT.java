@@ -38,6 +38,7 @@ public class TheSubscriberMQTT extends PropertyChangeSupport implements Runnable
 
    public static final String CLIENT_PROPERTY_LABEL = "addClientData";
    public static final String REPORT_ERROR_LABEL = "reportSubscriberError";
+   public static final String MQTT_CONNECTED_LABEL = "mqttConnected";
 
    private static final String MQTT_PREFIX = "MQTTE";
    private static final String PREFIX_DELIMITER = "~";
@@ -54,6 +55,7 @@ public class TheSubscriberMQTT extends PropertyChangeSupport implements Runnable
       this.topicAndPrefixPairs = topicAndPrefixPairs;
       this.addPropertyChangeListener(CLIENT_PROPERTY_LABEL, listener);
       this.addPropertyChangeListener(REPORT_ERROR_LABEL, listener);
+      this.addPropertyChangeListener(MQTT_CONNECTED_LABEL, listener);
    }
 
    @Override
@@ -66,6 +68,7 @@ public class TheSubscriberMQTT extends PropertyChangeSupport implements Runnable
          log.info("Connected to broker: " + broker);
          for (String topic : topicAndPrefixPairs.keySet()) {
             client.subscribe(topic);
+            firePropertyChange(MQTT_CONNECTED_LABEL, null, "MQTT Connected: " + topic);
             log.info("Subscribed to topic: " + topic);
          }
          // keep the thread alive and idle while waiting for new data

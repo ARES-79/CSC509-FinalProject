@@ -60,6 +60,7 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
    public static final String EYE_DATA_LABEL = "EYE";
    public static final String EMOTION_DATA_LABEL = "EMOTION";
    public static final String MQTTBROKER_ERROR = "MQTTE";
+   public static final String MQTT_CONN_SUCCESS = "MQTTC";
    public static final int EYE_TIMEOUT_IN_MS = 500;
    public static final int EMOTION_TIMEOUT_IN_MS = 200;
    private static final String PREFIX_DELIMITER = "~";
@@ -91,6 +92,9 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
          }
          case TheSubscriberMQTT.REPORT_ERROR_LABEL -> {
             alertError((String) evt.getNewValue());
+         }
+         case TheSubscriberMQTT.MQTT_CONNECTED_LABEL -> {
+            reportMQTTConnectionSuccess((String) evt.getNewValue());
          }
       }
    }
@@ -269,6 +273,9 @@ public class Blackboard extends PropertyChangeSupport implements PropertyChangeL
 
    public void reportMQTTBrokerError(String ex_message) {
       firePropertyChange(MQTTBROKER_ERROR, null, ex_message);
+   }
+   public void reportMQTTConnectionSuccess(String message) {
+      firePropertyChange(MQTT_CONN_SUCCESS, null, message);
    }
 
    public void startedProcessing() {
