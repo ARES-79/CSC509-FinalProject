@@ -1,5 +1,10 @@
 # CSC509-FinalProject: Reading &amp; Emotion Tracker
 
+Authors:
+Andrew Estrada
+Sean Sponsler
+Xiuyuan Qiu
+
 ## Project Overview
 This project is a prototype for an application to help users read more efficiently. 
 It uses mouse data to simulate eye tracking and an emotion-tracking headset (real or virtual)
