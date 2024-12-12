@@ -66,11 +66,13 @@ public class TheSubscriberMQTT extends PropertyChangeSupport implements Runnable
          log.debug("right before connecting to broker");
          client.connect();
          log.info("Connected to broker: " + broker);
+         StringBuilder topicList = new StringBuilder("Topics - \n");
          for (String topic : topicAndPrefixPairs.keySet()) {
+            topicList.append("\t'").append(topic).append("'\n");
             client.subscribe(topic);
-            firePropertyChange(MQTT_CONNECTED_LABEL, null, "MQTT Connected: " + topic);
             log.info("Subscribed to topic: " + topic);
          }
+         firePropertyChange(MQTT_CONNECTED_LABEL, null, "MQTT Connected: " + topicList);
          // keep the thread alive and idle while waiting for new data
          while (running) {
             Thread.sleep(1000);

@@ -21,4 +21,5 @@ device if you do not have access to a real one (we use the Insight model 1.0).
 5. Run this application.
 6. ** If it is your first time running the application, a pop-up should appear in the EMOTIV Launcher window asking to approve the application for accessing the software. Click Approve. Then close and restart this application.
 7. You can begin data visualization by clicking 'Actions' -> 'Start'.
-8. You can then simulate your gaze by dragging the mouse across the text you are reading. 
+8. Wait for the pop-ups showing a successful connection to 1) the mqtt broker and 2) the emotiv launcher. 
+9. You can then simulate your gaze by dragging the mouse across the text you are reading. 
